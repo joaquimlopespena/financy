@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import { prisma } from "../../config/prisma";
 import { UserService } from "../users/user.service";
 import { LoginOutput, RegisterOutput } from "./dto/auth.output";
 import { LoginInput, RegisterInput } from "./dto/login.input";
@@ -42,3 +42,6 @@ export class AuthService {
         };
     }
 }
+
+const userService = new UserService(prisma);
+export const authService = new AuthService(userService);
