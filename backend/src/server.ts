@@ -6,10 +6,11 @@ import express from "express";
 import { buildSchema } from "type-graphql";
 import { app } from "./app";
 import { HealthResolver } from "./graphql/health.resolver";
+import { AuthResolver } from "./modules/auth/auth.resolver";
 
 async function bootstrap() {
     const schema = await buildSchema({
-        resolvers: [HealthResolver],
+        resolvers: [HealthResolver, AuthResolver],
         validate: false,
         emitSchemaFile: './src/schema.graphql',
     })
