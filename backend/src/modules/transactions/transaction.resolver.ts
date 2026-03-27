@@ -10,7 +10,7 @@ import { CategoryService } from "../categories/category.service";
 import { UpdateTransactionInput } from "./dto/update-transaction.input";
 import { CategoryModel } from "../../models/category.model";
 
-@Resolver()
+@Resolver(() => TransactionModel)
 export class TransactionResolver {
     private transactionService = new TransactionService();
     private userService = new UserService();

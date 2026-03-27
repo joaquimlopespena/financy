@@ -10,7 +10,7 @@ import { TransactionModel } from "../../models/transaction.model";
 import { UserService } from "../users/user.service";
 import { TransactionService } from "../transactions/transaction.service";
 
-@Resolver()
+@Resolver(() => CategoryModel)
 export class CategoryResolver {
     private categoryService = new CategoryService();
     private userService = new UserService();

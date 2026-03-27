@@ -1,7 +1,8 @@
-import { Field, Float } from "type-graphql";
+import { Field, Float, GraphQLISODateTime, ObjectType } from "type-graphql";
 import { UserModel } from "./user.model";
 import { CategoryModel } from "./category.model";
 
+@ObjectType()
 export class TransactionModel {
     @Field(() => String)
     id: string;
@@ -33,9 +34,9 @@ export class TransactionModel {
     @Field(() => CategoryModel)
     category: CategoryModel;
 
-    @Field(() => Date)
+    @Field(() => GraphQLISODateTime)
     createdAt: Date;
 
-    @Field(() => Date)
+    @Field(() => GraphQLISODateTime)
     updatedAt: Date;
 }

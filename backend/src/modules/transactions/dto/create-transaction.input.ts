@@ -1,6 +1,9 @@
-import { Field, Float, InputType } from "type-graphql";
+import { Field, Float, GraphQLISODateTime, InputType, registerEnumType } from "type-graphql";
 import { TransactionType } from "../../../generated/prisma/enums";
 
+registerEnumType(TransactionType, {
+    name: "TransactionType",
+  });
 @InputType()
 export class CreateTransactionInput {
     @Field(() => String)
@@ -15,11 +18,8 @@ export class CreateTransactionInput {
     @Field(() => TransactionType)
     type: TransactionType;
 
-    @Field(() => Date)
+    @Field(() => GraphQLISODateTime)
     transactionDate: Date;
-
-    @Field(() => String)
-    userId: string;
 
     @Field(() => String)
     categoryId: string;

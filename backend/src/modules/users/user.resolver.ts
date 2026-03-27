@@ -5,7 +5,7 @@ import { IsAuth } from "../../middlewares/auth.middleware";
 import { UpdateUserInput } from "./dto/create-user.input";
 import { UserService } from "./user.service";
 
-@Resolver()
+@Resolver(() => UserModel)
 export class UserResolver {
     private userService = new UserService();
 

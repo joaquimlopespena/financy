@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, GraphQLISODateTime, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class UserModel {
@@ -14,9 +14,9 @@ export class UserModel {
     @Field(() => String)
     password: string;
 
-    @Field(() => Date)
+    @Field(() => GraphQLISODateTime)
     createdAt: Date;
 
-    @Field(() => Date)
+    @Field(() => GraphQLISODateTime)
     updatedAt: Date;
 }
