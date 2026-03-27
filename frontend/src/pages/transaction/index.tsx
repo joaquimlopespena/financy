@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Search } from "lucide-react";
 import { SelectForm } from "./components/Select";
-import { MOCK_CATEGORIES, PERIOD_OPTIONS_2026 } from "@/lib/mock";
+import { MOCK_CATEGORIES, MOCK_TRANSACTIONS, PERIOD_OPTIONS_2026 } from "@/lib/mock";
+import { TransactionsTable } from "./components/transactions-table";
 
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */
 export default function Transaction() {
@@ -92,8 +93,10 @@ export default function Transaction() {
                     </form>
                 </CardContent>
             </Card>
-            <Card className="mt-6 w-full border border-gray-200 bg-white shadow-sm ring-0">
-                <CardContent className="p-6"></CardContent>
+            <Card className="mt-6 w-full overflow-hidden border border-gray-200 bg-white shadow-sm ring-0">
+                <CardContent className="p-0">
+                    <TransactionsTable transactions={MOCK_TRANSACTIONS} />
+                </CardContent>
             </Card>
         </div>
     );
