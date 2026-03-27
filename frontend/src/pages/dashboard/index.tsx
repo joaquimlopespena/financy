@@ -5,7 +5,7 @@ import { MOCK_CATEGORIES, MOCK_TRANSACTIONS } from "@/lib/mock";
 
 export default function Dashboard() {
     return (
-        <div className="mx-auto mt-8 w-full max-w-7xl px-4 sm:px-6 lg:px-10">
+        <div>
             <SummaryCardsRow />
 
             <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)] lg:items-start">

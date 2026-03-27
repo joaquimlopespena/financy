@@ -1,5 +1,5 @@
 import { Layout } from "./components/Layout"
-import Dashboard from "./pages/dashboard"
+import Transaction from "./pages/transaction"
 
 function App() {
 
@@ -8,7 +8,8 @@ function App() {
 
       {/* <Login /> */}
       {/* <Registrar /> */}
-      <Dashboard />
+      {/* <Dashboard /> */}
+      <Transaction />
     </Layout>
   )
 }

@@ -13,8 +13,8 @@ import {
 import { cn } from "../lib/utils";
 
 const navItems = [
-    { label: "Dashboard", href: "#", active: true },
-    { label: "Transações", href: "#", active: false },
+    { label: "Dashboard", href: "#", active: false},
+    { label: "Transações", href: "#", active: true },
     { label: "Categorias", href: "#", active: false },
 ] as const;
 
@@ -23,7 +23,7 @@ export function Header() {
 
     return (
         <header className="relative border-b border-gray-200 bg-white">
-            <div className="mx-auto flex h-16 w-full max-w-[calc(100%-4rem)] items-center gap-3 px-4 sm:px-6 lg:px-10">
+            <div className="mx-auto flex h-16 w-full max-w-[calc(100%-2rem)] items-center gap-3 sm:px-6 lg:px-10">
                 {/* Logo — esquerda */}
                 <div className="flex min-w-0 flex-1 items-center">
                     <a href="#" className="flex shrink-0 items-center gap-2">
