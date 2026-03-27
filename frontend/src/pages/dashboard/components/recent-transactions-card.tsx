@@ -11,6 +11,8 @@ import { formatBrl } from "@/lib/format";
 import type { Transaction } from "@/lib/mock";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, ChevronRight, PlusCircle } from "lucide-react";
+import { ModalFromTransaction } from "@/pages/transaction/components/ModalFromTransaction";
+import { useState } from "react";
 
 type Tone = Transaction["tone"];
 
@@ -35,6 +37,13 @@ interface RecentTransactionsCardProps {
 }
 
 export function RecentTransactionsCard({ transactions }: RecentTransactionsCardProps) {
+    const [open, setOpen] = useState(false)
+    const handleOpenChange = (open: boolean) => {
+        setOpen(open)
+    }
+    const handleSuccess = () => {
+        setOpen(false)
+    }
     return (
         <Card className="min-w-0 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ring-0">
             <CardHeader className="flex flex-row items-center justify-between gap-4 border-b border-gray-200 px-6 pb-4 pt-6">
@@ -106,6 +115,7 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsCardP
 
             <CardFooter className="border-t border-gray-200 p-0">
                 <Button
+                    onClick={() => setOpen(true)}
                     variant="ghost"
                     className="h-auto w-full gap-2 rounded-none py-4 font-semibold text-brand-base hover:bg-gray-50 hover:text-brand-dark"
                 >
@@ -113,6 +123,7 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsCardP
                     Nova transação
                 </Button>
             </CardFooter>
+            <ModalFromTransaction open={open} onOpenChange={handleOpenChange} onSuccess={handleSuccess} />
         </Card>
     );
 }
