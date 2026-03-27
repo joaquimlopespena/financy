@@ -2,15 +2,19 @@ import { PrismaClient } from "../../generated/prisma/client";
 import { CategoryModel } from "../../models/category.model";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { UpdateCategoryInput } from "./dto/update-category.input";
+import { TransactionModel } from "../../models/transaction.model";
 
 export class CategoryService {
     constructor(private readonly prisma: PrismaClient) {}
 
-    async create(input: CreateCategoryInput): Promise<CategoryModel> {
+    async create(input: CreateCategoryInput, userId: String): Promise<CategoryModel> {
         const category = await this.prisma.category.create({
-            data: input,
+            data: {
+                ...input,
+                user: { connect: { id: userId as string } },
+            },
         });
-        return category as unknown as CategoryModel;
+        return category as unknown as CategoryModel;    
     }
 
     async findByUserId(userId: string): Promise<CategoryModel[]> {
@@ -58,5 +62,13 @@ export class CategoryService {
             where: { id, userId },
         });
         return;
+    }
+
+    async findTransactionsById(id: string, userId: string): Promise<TransactionModel[]> {
+        const category = await this.findById(id, userId);
+        if (!category) {
+            throw new Error("Category not found");
+        }
+        return category.transactions as unknown as TransactionModel[];
     }
 }

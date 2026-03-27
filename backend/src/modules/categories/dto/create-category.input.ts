@@ -4,9 +4,6 @@ export class CreateCategoryInput {
     @Field(() => String)
     name: string;
 
-    @Field(() => String)
-    userId: string;
-
     @Field(() => Date, { nullable: true })
     createdAt?: Date;
 
