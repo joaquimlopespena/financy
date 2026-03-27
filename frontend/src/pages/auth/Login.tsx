@@ -82,14 +82,14 @@ export default function Login() {
                         </div>
 
                         <div className="flex flex-wrap items-center justify-between gap-3">
-                            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-600">
+                            <Label className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-600">
                                 <input
                                     type="checkbox"
                                     name="remember"
                                     className="size-4 rounded border-gray-300 text-brand-base focus:ring-2 focus:ring-brand-base/30"
                                 />
                                 Lembrar-me
-                            </label>
+                            </Label>
                             <a
                                 href="#"
                                 className="text-sm font-medium text-brand-base hover:underline"
