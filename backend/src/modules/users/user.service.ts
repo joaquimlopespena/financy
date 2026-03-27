@@ -1,12 +1,9 @@
 import { prisma } from "../../config/prisma";
 import { hashPassword } from "../../shared/utils/hash";
-import { PrismaClient } from "../../generated/prisma/client";
 import { UserModel } from "../../models/user.model";
 import { CreateUserInput, UpdateUserInput } from "./dto/create-user.input";
 
 export class UserService {
-
-    constructor(private readonly prisma: PrismaClient) {}
 
     async create(input: CreateUserInput): Promise<UserModel> {
 
@@ -17,7 +14,7 @@ export class UserService {
 
         const hashedPassword = await hashPassword(input.password);
 
-        const user = await this.prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 ...input,
                 password: hashedPassword,
@@ -28,14 +25,14 @@ export class UserService {
     }
 
     async findByEmail(email: string): Promise<UserModel | null> {
-        const user = await this.prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { email },
         });
         return user;
     }
 
     async findById(id: string): Promise<UserModel | null> {
-        const user = await this.prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id },
         });
         return user;
@@ -51,11 +48,11 @@ export class UserService {
             input.password = await hashPassword(input.password);
         }
 
-        return this.prisma.user.update({
-            where: { id },
+        const updatedUser = await prisma.user.update({
+            where: { id },  
             data: input,
         });
+        return updatedUser as unknown as UserModel;
     }
 }
 
-export const userService = new UserService(prisma);

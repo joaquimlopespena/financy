@@ -1,14 +1,12 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import { prisma } from '../../config/prisma';
 import { CategoryModel } from "../../models/category.model";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { UpdateCategoryInput } from "./dto/update-category.input";
 import { TransactionModel } from "../../models/transaction.model";
 
 export class CategoryService {
-    constructor(private readonly prisma: PrismaClient) {}
-
     async create(input: CreateCategoryInput, userId: String): Promise<CategoryModel> {
-        const category = await this.prisma.category.create({
+        const category = await prisma.category.create({
             data: {
                 ...input,
                 user: { connect: { id: userId as string } },
@@ -18,14 +16,14 @@ export class CategoryService {
     }
 
     async findByUserId(userId: string): Promise<CategoryModel[]> {
-        const categories = await this.prisma.category.findMany({
+        const categories = await prisma.category.findMany({
             where: { userId },
         });
         return categories as unknown as CategoryModel[];
     }
 
     async findById(id: string, userId: string): Promise<CategoryModel | null> {
-        const category = await this.prisma.category.findUnique({
+        const category = await prisma.category.findUnique({
             where: { id, userId },
         });
 
@@ -46,7 +44,7 @@ export class CategoryService {
             throw new Error("Category not found");
         }
 
-        const updatedCategory = await this.prisma.category.update({
+        const updatedCategory = await prisma.category.update({
             where: { id, userId },
             data: input,
         });
@@ -58,7 +56,7 @@ export class CategoryService {
         if (!category) {
             throw new Error("Category not found");
         }
-        await this.prisma.category.delete({
+        await prisma.category.delete({
             where: { id, userId },
         });
         return;

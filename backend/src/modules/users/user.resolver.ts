@@ -3,13 +3,15 @@ import { UserModel } from "../../models/user.model";
 import { GqlUser } from "../../graphql/decorators/user.decorator";
 import { IsAuth } from "../../middlewares/auth.middleware";
 import { UpdateUserInput } from "./dto/create-user.input";
-import { userService } from "./user.service";
+import { UserService } from "./user.service";
 
 @Resolver()
 export class UserResolver {
+    private userService = new UserService();
+
     @Query(() => UserModel)
     async user(@Arg("id", () => String) id: string): Promise<UserModel> {
-        return userService.findById(id);
+        return this.userService.findById(id);
     }
 
     @Mutation(() => UserModel)
@@ -22,6 +24,6 @@ export class UserResolver {
         if (!user) {
             throw new Error("User not found");
         }
-        return userService.update(user.id, input);
+        return this.userService.update(user.id, input);
     }
 }   

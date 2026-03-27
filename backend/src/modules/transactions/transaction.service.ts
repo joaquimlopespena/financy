@@ -1,13 +1,11 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import { prisma } from '../../config/prisma';
 import { TransactionModel } from "../../models/transaction.model";
 import { CreateTransactionInput } from "./dto/create-transaction.input";
 import { UpdateTransactionInput } from "./dto/update-transaction.input";
 
 export class TransactionService {
-    constructor(private readonly prisma: PrismaClient) {}
-
     async create(input: CreateTransactionInput, userId: string): Promise<TransactionModel> {
-        const transaction = await this.prisma.transaction.create({
+        const transaction = await prisma.transaction.create({
             data: {
                 title: input.title,
                 description: input.description,
@@ -23,14 +21,14 @@ export class TransactionService {
     }
 
     async findByUserId(userId: string): Promise<TransactionModel[]> {
-        const transactions = await this.prisma.transaction.findMany({
+        const transactions = await prisma.transaction.findMany({
             where: { userId },
         });
         return transactions as unknown as TransactionModel[];
     }
 
     async findById(id: string, userId: string): Promise<TransactionModel | null> {
-        const transaction = await this.prisma.transaction.findUnique({
+        const transaction = await prisma.transaction.findUnique({
             where: { id, userId },
         });
 
@@ -46,7 +44,7 @@ export class TransactionService {
     }
 
     async findByCategoryId(categoryId: string, userId: string): Promise<TransactionModel[]> {
-        const transactions = await this.prisma.transaction.findMany({
+        const transactions = await prisma.transaction.findMany({
             where: { categoryId, userId },
             orderBy: { transactionDate: "desc" },
         });
@@ -59,7 +57,7 @@ export class TransactionService {
             throw new Error("Transaction not found");
         }
 
-        const updatedTransaction = await this.prisma.transaction.update({
+        const updatedTransaction = await prisma.transaction.update({
             where: { id, userId },
             data: input,
         });
@@ -71,7 +69,7 @@ export class TransactionService {
         if (!transaction) {
             throw new Error("Transaction not found");
         }
-        await this.prisma.transaction.delete({
+        await prisma.transaction.delete({
             where: { id, userId },
         });
         return;

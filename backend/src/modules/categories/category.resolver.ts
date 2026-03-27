@@ -12,11 +12,9 @@ import { TransactionService } from "../transactions/transaction.service";
 
 @Resolver()
 export class CategoryResolver {
-    constructor(
-        private readonly categoryService: CategoryService,
-        private readonly userService: UserService,
-        private readonly transactionService: TransactionService
-    ) {}
+    private categoryService = new CategoryService();
+    private userService = new UserService();
+    private transactionService = new TransactionService();
 
     @Mutation(() => CategoryModel)
     @UseMiddleware(IsAuth)
