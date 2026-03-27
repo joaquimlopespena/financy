@@ -81,3 +81,18 @@ export const MOCK_CATEGORIES: CategorySummary[] = [
     { id: "c4", label: "Entretenimento", itemCount: 5, total: 245.75, tone: "pink" },
     { id: "c5", label: "Utilidades", itemCount: 4, total: 428.9, tone: "yellow" },
 ];
+
+export const PERIOD_OPTIONS_2026 = [
+    { value: "2026-01", label: "Janeiro / 2026" },
+    { value: "2026-02", label: "Fevereiro / 2026" },
+    { value: "2026-03", label: "Março / 2026" },
+    { value: "2026-04", label: "Abril / 2026" },
+    { value: "2026-05", label: "Maio / 2026" },
+    { value: "2026-06", label: "Junho / 2026" },
+    { value: "2026-07", label: "Julho / 2026" },
+    { value: "2026-08", label: "Agosto / 2026" },
+    { value: "2026-09", label: "Setembro / 2026" },
+    { value: "2026-10", label: "Outubro / 2026" },
+    { value: "2026-11", label: "Novembro / 2026" },
+    { value: "2026-12", label: "Dezembro / 2026" },
+];
