@@ -6,9 +6,18 @@ import { Plus, Search } from "lucide-react";
 import { SelectForm } from "./components/Select";
 import { MOCK_CATEGORIES, MOCK_TRANSACTIONS, PERIOD_OPTIONS_2026 } from "@/lib/mock";
 import { TransactionsTable } from "./components/transactions-table";
+import { ModalFromTransaction } from "./components/ModalFromTransaction";
+import { useState } from "react";
 
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */
 export default function Transaction() {
+    const [open, setOpen] = useState(false)
+    const handleOpenChange = (open: boolean) => {
+        setOpen(open)
+    }
+    const handleSuccess = () => {
+        setOpen(false)
+    }
     return (
         <div>
             <Card className="border-0 bg-transparent p-0 shadow-none ring-0">
@@ -21,7 +30,7 @@ export default function Transaction() {
                             Gerencie todas as suas transações financeiras
                         </p>
                     </div>
-                    <Button type="button" className="h-10 gap-2 px-4 font-medium">
+                    <Button type="button" className="h-10 gap-2 px-4 font-medium" onClick={() => setOpen(true)}>
                         <Plus className="size-4" strokeWidth={2} aria-hidden />
                         Nova transação
                     </Button>
@@ -98,6 +107,7 @@ export default function Transaction() {
                     <TransactionsTable transactions={MOCK_TRANSACTIONS} />
                 </CardContent>
             </Card>
+            <ModalFromTransaction open={open} onOpenChange={handleOpenChange} onSuccess={handleSuccess} />
         </div>
     );
 }
