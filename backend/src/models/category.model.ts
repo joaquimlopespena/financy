@@ -1,5 +1,6 @@
 import { Field } from "type-graphql";
 import { UserModel } from "./user.model";
+import { TransactionModel } from "./transaction.model";
 
 export class CategoryModel {
 
@@ -20,5 +21,8 @@ export class CategoryModel {
 
     @Field(() => UserModel)
     user: UserModel;
+
+    @Field(() => [TransactionModel])
+    transactions: TransactionModel[];
 
 }
