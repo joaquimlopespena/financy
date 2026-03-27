@@ -29,7 +29,7 @@ export default function Login() {
                     </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-6 px-8 pb-10 pt-6 sm:px-10">
+                <CardContent className="space-y-6 pb-10 pt-6 px-3 sm:px-10">
                     <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium text-gray-800">
