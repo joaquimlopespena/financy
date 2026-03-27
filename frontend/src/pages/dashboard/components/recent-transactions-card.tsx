@@ -11,7 +11,7 @@ import { formatBrl } from "@/lib/format";
 import type { Transaction } from "@/lib/mock";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, ChevronRight, PlusCircle } from "lucide-react";
-import { ModalFromTransaction } from "@/pages/transaction/components/ModalFromTransaction";
+import { ModalFromTransaction } from "@/pages/transaction/components/modal-from-transaction.tsx";
 import { useState } from "react";
 
 type Tone = Transaction["tone"];

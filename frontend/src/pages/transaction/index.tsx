@@ -6,7 +6,7 @@ import { Plus, Search } from "lucide-react";
 import { SelectForm } from "./components/Select";
 import { MOCK_CATEGORIES, MOCK_TRANSACTIONS, PERIOD_OPTIONS_2026 } from "@/lib/mock";
 import { TransactionsTable } from "./components/transactions-table";
-import { ModalFromTransaction } from "./components/ModalFromTransaction";
+import { ModalFromTransaction } from "./components/modal-from-transaction";
 import { useState } from "react";
 
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */

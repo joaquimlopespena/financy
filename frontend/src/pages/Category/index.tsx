@@ -5,9 +5,10 @@ import { CategoryGridCard } from "./components/category-grid-card";
 import { ArrowUpDown, Plus, Tag, Utensils } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CategoryStatCard } from "./components/category-stat-card";
+import { ModalFromCategory } from "./components/modal-from-category";
 
 export default function Category() {
-    const [, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const { totalCategories, totalTransactions, topCategoryLabel } = useMemo(() => {
         const top = MOCK_CATEGORIES.reduce((a, b) => (a.itemCount >= b.itemCount ? a : b));
@@ -17,6 +18,10 @@ export default function Category() {
             topCategoryLabel: top.label,
         };
     }, []);
+
+    const handleSuccess = () => {
+        setOpen(false);
+    }
 
     return (
         <div>
@@ -62,6 +67,7 @@ export default function Category() {
                     <CategoryGridCard key={category.id} category={category} />
                 ))}
             </div>
+            <ModalFromCategory open={open} onOpenChange={setOpen} onSuccess={handleSuccess} />
         </div>
     );
 }

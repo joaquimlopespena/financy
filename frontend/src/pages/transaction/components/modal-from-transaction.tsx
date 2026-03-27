@@ -65,7 +65,7 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                         <Input
                             id="tx-desc"
                             placeholder="Ex. Almoço no restaurante"
-                            className="h-10 rounded-lg border-gray-200 bg-white px-3 text-sm placeholder:text-gray-400"
+                            className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm placeholder:text-gray-400"
                         />
                     </div>
 
@@ -80,7 +80,7 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                                 name="date"
                                 placeholder="Selecione"
                                 autoComplete="off"
-                                className="h-10 rounded-lg border-gray-200 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400"
+                                className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400"
                             />
                         </div>
                         <div className="min-w-0 space-y-2">
@@ -93,7 +93,7 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                                 name="amount"
                                 inputMode="decimal"
                                 defaultValue="R$ 0,00"
-                                className="h-10 rounded-lg border-gray-200 bg-white px-3 text-sm tabular-nums text-gray-900"
+                                className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm tabular-nums text-gray-900"
                             />
                         </div>
                     </div>
