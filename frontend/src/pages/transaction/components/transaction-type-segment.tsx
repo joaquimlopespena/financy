@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, Plus } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 export type TransactionKind = "expense" | "income";
 
@@ -15,7 +15,7 @@ export function TransactionTypeSegment({ value, onValueChange, className }: Tran
             role="radiogroup"
             aria-label="Tipo de transação"
             className={cn(
-                "flex w-full gap-1 rounded-xl border border-gray-200 bg-white p-1",
+                "flex w-full gap-1 rounded-xl border border-gray-200 bg-white p-2",
                 className,
             )}
         >
@@ -27,19 +27,22 @@ export function TransactionTypeSegment({ value, onValueChange, className }: Tran
                 className={cn(
                     "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:min-h-12",
                     value === "expense"
-                        ? "border border-red-400 bg-red-light text-gray-900"
+                        ? "border border-red-base bg-white text-gray-900"
                         : "border border-transparent bg-transparent text-gray-500",
                 )}
             >
                 <span
                     className={cn(
-                        "flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-white",
-                        value === "expense" ? "border-red-400" : "border-gray-300",
+                        "flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-transparent",
+                        value === "expense" ? "border-red-base" : "border-gray-300",
                     )}
                     aria-hidden
                 >
                     <ArrowDown
-                        className={cn("size-3.5", value === "expense" ? "text-red-400" : "text-gray-400")}
+                        className={cn(
+                            "size-3.5",
+                            value === "expense" ? "text-red-base" : "text-gray-400",
+                        )}
                         strokeWidth={2.5}
                     />
                 </span>
@@ -54,22 +57,24 @@ export function TransactionTypeSegment({ value, onValueChange, className }: Tran
                 className={cn(
                     "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:min-h-12",
                     value === "income"
-                        ? "border border-brand-base bg-green-light text-brand-base"
+                        ? "border border-brand-base bg-white text-gray-900"
                         : "border border-transparent bg-transparent text-gray-500",
                 )}
             >
                 <span
                     className={cn(
-                        "flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-white",
+                        "flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-transparent",
                         value === "income" ? "border-brand-base" : "border-gray-300",
                     )}
                     aria-hidden
                 >
-                    {value === "income" ? (
-                        <ArrowUp className="size-3.5 text-brand-base" strokeWidth={2.5} />
-                    ) : (
-                        <Plus className="size-3.5 text-gray-400" strokeWidth={2.5} />
-                    )}
+                    <ArrowUp
+                        className={cn(
+                            "size-3.5",
+                            value === "income" ? "text-brand-base" : "text-gray-400",
+                        )}
+                        strokeWidth={2.5}
+                    />
                 </span>
                 <span className="truncate">Receita</span>
             </button>
