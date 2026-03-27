@@ -1,6 +1,6 @@
 import { Briefcase, Car, PiggyBank, ShoppingCart, Utensils, type LucideIcon } from "lucide-react";
 
-interface Transaction {
+export interface Transaction {
     id: string;
     title: string;
     date: string;
@@ -9,6 +9,16 @@ interface Transaction {
     positive: boolean;
     tone: "green" | "blue" | "purple" | "orange" | "mint";
     Icon: LucideIcon;
+}
+
+export type CategoryTone = "blue" | "purple" | "orange" | "pink" | "yellow";
+
+export interface CategorySummary {
+    id: string;
+    label: string;
+    itemCount: number;
+    total: number;
+    tone: CategoryTone;
 }
 
 export const MOCK_TRANSACTIONS: Transaction[] = [
@@ -62,4 +72,12 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
         tone: "mint",
         Icon: PiggyBank,
     },
-]
+];
+
+export const MOCK_CATEGORIES: CategorySummary[] = [
+    { id: "c1", label: "Alimentação", itemCount: 12, total: 542.3, tone: "blue" },
+    { id: "c2", label: "Transporte", itemCount: 8, total: 310.5, tone: "purple" },
+    { id: "c3", label: "Mercado", itemCount: 15, total: 892.0, tone: "orange" },
+    { id: "c4", label: "Entretenimento", itemCount: 5, total: 245.75, tone: "pink" },
+    { id: "c5", label: "Utilidades", itemCount: 4, total: 428.9, tone: "yellow" },
+];
