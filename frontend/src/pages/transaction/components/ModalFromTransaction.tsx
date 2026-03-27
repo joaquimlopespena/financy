@@ -7,7 +7,12 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { TransactionTypeSegment, type TransactionKind } from "./transaction-type-segment";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { SelectForm } from "./Select";
+import { MOCK_CATEGORIES } from "@/lib/mock";
 
 interface CreateIdeiaDialogProps {
     open: boolean;
@@ -16,16 +21,15 @@ interface CreateIdeiaDialogProps {
 }
 
 export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess }: CreateIdeiaDialogProps) {
-    const [isOpen, setIsOpen] = useState(open);
-
-    useEffect(() => {
-        setIsOpen(open);
-    }, [open]);
+    const [kind, setKind] = useState<TransactionKind>("expense");
 
     return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent showCloseButton={false} className="gap-0 p-0 sm:max-w-md">
-                <DialogHeader className="flex flex-row items-start justify-between gap-4 space-y-0 border-b border-gray-100 p-6 pb-4">
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent
+                showCloseButton={false}
+                className="gap-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-0 shadow-lg sm:max-w-lg"
+            >
+                <DialogHeader className="flex flex-row items-start justify-between gap-4 space-y-0 p-6 pb-4">
                     <div className="min-w-0 flex-1 space-y-1">
                         <DialogTitle className="font-sans text-lg font-semibold leading-tight text-gray-900">
                             Nova transação
@@ -45,6 +49,77 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                         <span className="sr-only">Fechar</span>
                     </Button>
                 </DialogHeader>
+
+                <form
+                    className="flex flex-col gap-5 px-6 pb-6"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                    }}
+                >
+                    <TransactionTypeSegment value={kind} onValueChange={setKind} />
+
+                    <div className="space-y-2">
+                        <Label htmlFor="tx-desc" className="text-sm font-medium text-gray-800">
+                            Descrição
+                        </Label>
+                        <Input
+                            id="tx-desc"
+                            placeholder="Ex. Almoço no restaurante"
+                            className="h-10 rounded-lg border-gray-200 bg-white px-3 text-sm placeholder:text-gray-400"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="min-w-0 space-y-2">
+                            <Label htmlFor="transaction-date" className="text-sm font-medium text-gray-800">
+                                Data
+                            </Label>
+                            <Input
+                                id="transaction-date"
+                                type="text"
+                                name="date"
+                                placeholder="Selecione"
+                                autoComplete="off"
+                                className="h-10 rounded-lg border-gray-200 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400"
+                            />
+                        </div>
+                        <div className="min-w-0 space-y-2">
+                            <Label htmlFor="transaction-value" className="text-sm font-medium text-gray-800">
+                                Valor
+                            </Label>
+                            <Input
+                                id="transaction-value"
+                                type="text"
+                                name="amount"
+                                inputMode="decimal"
+                                defaultValue="R$ 0,00"
+                                className="h-10 rounded-lg border-gray-200 bg-white px-3 text-sm tabular-nums text-gray-900"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="category" className="text-sm font-medium text-gray-800">
+                            Categoria
+                        </Label>
+                        <SelectForm
+                            id="category"
+                            label="Categoria"
+                            allLabel="Selecione"
+                            options={MOCK_CATEGORIES.map((category) => ({
+                                value: category.id,
+                                label: category.label,
+                            }))}
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        className="h-11 w-full rounded-lg bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
+                    >
+                        Salvar
+                    </Button>
+                </form>
             </DialogContent>
         </Dialog>
     );
