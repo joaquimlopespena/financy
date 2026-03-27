@@ -10,6 +10,7 @@ function App() {
       {/* <Registrar /> */}
       {/* <Dashboard /> */}
       <Transaction />
+      {/* <Category /> */}
     </Layout>
   )
 }
