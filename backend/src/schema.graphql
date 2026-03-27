@@ -22,10 +22,11 @@ type LoginOutput {
 type Mutation {
   login(input: LoginInput!): LoginOutput!
   register(input: RegisterInput!): RegisterOutput!
+  updateUser(input: UpdateUserInput!): UserModel!
 }
 
 type Query {
-  health: String!
+  user(id: String!): UserModel!
 }
 
 input RegisterInput {
@@ -38,6 +39,12 @@ type RegisterOutput {
   refreshToken: String!
   token: String!
   user: UserModel!
+}
+
+input UpdateUserInput {
+  email: String
+  name: String
+  password: String
 }
 
 type UserModel {

@@ -1,3 +1,4 @@
+import { prisma } from "../../config/prisma";
 import { hashPassword } from "../../shared/utils/hash";
 import { PrismaClient } from "../../generated/prisma/client";
 import { UserModel } from "../../models/user.model";
@@ -56,3 +57,5 @@ export class UserService {
         });
     }
 }
+
+export const userService = new UserService(prisma);

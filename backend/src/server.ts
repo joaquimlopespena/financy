@@ -5,12 +5,13 @@ import cors from "cors";
 import express from "express";
 import { buildSchema } from "type-graphql";
 import { app } from "./app";
-import { HealthResolver } from "./graphql/health.resolver";
 import { AuthResolver } from "./modules/auth/auth.resolver";
+import { UserResolver } from "./modules/users/user.resolver";
+import { buildContext } from "./graphql/context";
 
 async function bootstrap() {
     const schema = await buildSchema({
-        resolvers: [HealthResolver, AuthResolver],
+        resolvers: [UserResolver, AuthResolver],
         validate: false,
         emitSchemaFile: './src/schema.graphql',
     })
@@ -25,7 +26,7 @@ async function bootstrap() {
         '/graphql',
         cors<cors.CorsRequest>({ origin: '*', credentials: true }),
         express.json(),
-        expressMiddleware(server, { context: async () => ({}) })
+        expressMiddleware(server, { context: buildContext })
       );
     
       app.listen(3000, () => {
