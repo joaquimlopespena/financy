@@ -1,5 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 
 interface CreateIdeiaDialogProps {
@@ -8,7 +13,7 @@ interface CreateIdeiaDialogProps {
     onSuccess: () => void,
 }
 
-export function ModalFromTransaction({ open, onOpenChange, onSuccess }: CreateIdeiaDialogProps) {
+export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess }: CreateIdeiaDialogProps) {
     const [isOpen, setIsOpen] = useState(open);
 
     useEffect(() => {
@@ -20,7 +25,10 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess }: CreateId
             <DialogContent showCloseButton={false}>
                 <DialogHeader>
                     <DialogTitle>Nova transação</DialogTitle>
-                </DialogHeader>  
+                    <DialogDescription>
+                        Preencha os dados para registrar uma nova movimentação.
+                    </DialogDescription>
+                </DialogHeader>
             </DialogContent>
         </Dialog>
     );
