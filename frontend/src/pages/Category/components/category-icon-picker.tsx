@@ -63,12 +63,12 @@ export function CategoryIconPicker({ value, onValueChange, className, "aria-labe
                         aria-checked={selected}
                         onClick={() => onValueChange(id)}
                         className={cn(
-                            "flex h-10 w-full items-center justify-center rounded-lg border-2 bg-gray-100 transition-colors sm:h-11",
+                            "flex h-10 w-full items-center justify-center rounded-lg border-2 bg-white transition-colors sm:h-11",
                             "hover:border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-base/30",
                             selected ? "border-brand-base" : "border-gray-200",
                         )}
                     >
-                        <Icon className="size-5 stroke-2 text-gray-700" aria-hidden />
+                        <Icon className="size-5 stroke-2 text-gray-500" aria-hidden />
                         <span className="sr-only">Ícone {id}</span>
                     </button>
                 );

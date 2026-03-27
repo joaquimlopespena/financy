@@ -5,7 +5,7 @@ export const CATEGORY_COLOR_OPTIONS: {
     inner: string;
     borderSelected: string;
 }[] = [
-    { id: "green", inner: "bg-green-base", borderSelected: "border-green-dark" },
+    { id: "green", inner: "bg-brand-base", borderSelected: "border-brand-dark" },
     { id: "blue", inner: "bg-blue-base", borderSelected: "border-blue-dark" },
     { id: "purple", inner: "bg-purple-base", borderSelected: "border-purple-dark" },
     { id: "pink", inner: "bg-pink-base", borderSelected: "border-pink-dark" },

@@ -27,7 +27,7 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }:
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 showCloseButton={false}
-                className="gap-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-0 shadow-lg sm:max-w-lg"
+                className="gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white p-0 shadow-lg sm:max-w-lg"
             >
                 <DialogHeader className="flex flex-row items-start justify-between gap-4 space-y-0 p-6 pb-4">
                     <div className="min-w-0 flex-1 space-y-1">
@@ -51,23 +51,33 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }:
                 </DialogHeader>
 
                 <form
-                    className="flex flex-col gap-5 px-6 pb-6"
+                    className="flex flex-col gap-6 px-6 pb-6"
                     onSubmit={(e) => {
                         e.preventDefault();
                     }}
                 >
                     <div className="space-y-2">
                         <Label htmlFor="category-name" className="text-sm font-medium text-gray-800">
-                            Titulo
+                            Título
                         </Label>
-                        <Input id="category-name" placeholder="Ex. Alimentação" className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm placeholder:text-gray-400" />
+                        <Input
+                            id="category-name"
+                            name="title"
+                            placeholder="Ex. Alimentação"
+                            className="h-12 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400"
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="category-description" className="text-sm font-medium text-gray-800">
                             Descrição
                         </Label>
-                        <Input id="category-description" placeholder="Descrição da categoria" className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm placeholder:text-gray-400" />
-                        <small className="text-sm text-gray-500">Opcional</small>
+                        <Input
+                            id="category-description"
+                            name="description"
+                            placeholder="Descrição da categoria"
+                            className="h-12 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400"
+                        />
+                        <p className="text-xs text-gray-500">Opcional</p>
                     </div>
                     <div className="space-y-2">
                         <span id="category-icon-label" className="text-sm font-medium text-gray-800">
@@ -89,7 +99,7 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }:
                     </div>
                     <Button
                         type="submit"
-                        className="h-11 w-full rounded-lg bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
+                        className="h-11 w-full rounded-xl bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
                     >
                         Salvar
                     </Button>
