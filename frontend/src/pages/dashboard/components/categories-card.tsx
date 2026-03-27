@@ -12,6 +12,9 @@ const categoryBadgeClass: Record<CategoryTone, string> = {
     orange: "border-0 bg-orange-light text-orange-dark hover:bg-orange-light",
     pink: "border-0 bg-pink-light text-pink-dark hover:bg-pink-light",
     yellow: "border-0 bg-yellow-light text-yellow-dark hover:bg-yellow-light",
+    red: "border-0 bg-red-light text-red-dark hover:bg-red-light",
+    green: "border-0 bg-green-light text-green-dark hover:bg-green-light",
+    mint: "border-0 bg-green-light text-brand-dark hover:bg-green-light",
 };
 
 interface CategoriesCardProps {

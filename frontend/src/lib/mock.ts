@@ -1,4 +1,14 @@
-import { Briefcase, Car, PiggyBank, ShoppingCart, Utensils, type LucideIcon } from "lucide-react";
+import {
+    Activity,
+    Briefcase,
+    Car,
+    Package,
+    PiggyBank,
+    ShoppingCart,
+    Ticket,
+    Utensils,
+    type LucideIcon,
+} from "lucide-react";
 
 export interface Transaction {
     id: string;
@@ -11,14 +21,25 @@ export interface Transaction {
     Icon: LucideIcon;
 }
 
-export type CategoryTone = "blue" | "purple" | "orange" | "pink" | "yellow";
+export type CategoryTone =
+    | "blue"
+    | "purple"
+    | "orange"
+    | "pink"
+    | "yellow"
+    | "red"
+    | "green"
+    | "mint";
 
 export interface CategorySummary {
     id: string;
     label: string;
+    /** Descrição curta para o card de categorias */
+    description: string;
     itemCount: number;
     total: number;
     tone: CategoryTone;
+    Icon: LucideIcon;
 }
 
 export const MOCK_TRANSACTIONS: Transaction[] = [
@@ -75,11 +96,78 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
 ];
 
 export const MOCK_CATEGORIES: CategorySummary[] = [
-    { id: "c1", label: "Alimentação", itemCount: 12, total: 542.3, tone: "blue" },
-    { id: "c2", label: "Transporte", itemCount: 8, total: 310.5, tone: "purple" },
-    { id: "c3", label: "Mercado", itemCount: 15, total: 892.0, tone: "orange" },
-    { id: "c4", label: "Entretenimento", itemCount: 5, total: 245.75, tone: "pink" },
-    { id: "c5", label: "Utilidades", itemCount: 4, total: 428.9, tone: "yellow" },
+    {
+        id: "c1",
+        label: "Alimentação",
+        description: "Restaurantes, delivery e refeições",
+        itemCount: 12,
+        total: 542.3,
+        tone: "blue",
+        Icon: Utensils,
+    },
+    {
+        id: "c2",
+        label: "Entretenimento",
+        description: "Cinema, jogos e lazer",
+        itemCount: 2,
+        total: 245.75,
+        tone: "pink",
+        Icon: Ticket,
+    },
+    {
+        id: "c3",
+        label: "Investimento",
+        description: "Aplicações e retornos financeiros",
+        itemCount: 1,
+        total: 1200.0,
+        tone: "green",
+        Icon: PiggyBank,
+    },
+    {
+        id: "c4",
+        label: "Mercado",
+        description: "Compras de supermercado e mantimentos",
+        itemCount: 3,
+        total: 892.0,
+        tone: "orange",
+        Icon: ShoppingCart,
+    },
+    {
+        id: "c5",
+        label: "Salário",
+        description: "Salários e rendimentos fixos",
+        itemCount: 6,
+        total: 8500.0,
+        tone: "mint",
+        Icon: Briefcase,
+    },
+    {
+        id: "c6",
+        label: "Saúde",
+        description: "Consultas, medicamentos e planos",
+        itemCount: 0,
+        total: 0,
+        tone: "red",
+        Icon: Activity,
+    },
+    {
+        id: "c7",
+        label: "Transporte",
+        description: "Combustível, transporte público e apps",
+        itemCount: 8,
+        total: 310.5,
+        tone: "purple",
+        Icon: Car,
+    },
+    {
+        id: "c8",
+        label: "Utilidades",
+        description: "Contas de casa, internet e serviços",
+        itemCount: 4,
+        total: 428.9,
+        tone: "yellow",
+        Icon: Package,
+    },
 ];
 
 export const PERIOD_OPTIONS_2026 = [

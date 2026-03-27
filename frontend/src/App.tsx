@@ -1,5 +1,5 @@
 import { Layout } from "./components/Layout"
-import Transaction from "./pages/transaction"
+import Category from "./pages/Category"
 
 function App() {
 
@@ -9,8 +9,8 @@ function App() {
       {/* <Login /> */}
       {/* <Registrar /> */}
       {/* <Dashboard /> */}
-      <Transaction />
-      {/* <Category /> */}
+      {/* <Transaction /> */}
+      <Category />
     </Layout>
   )
 }

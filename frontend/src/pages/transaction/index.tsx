@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Search } from "lucide-react";
@@ -26,9 +26,9 @@ export default function Transaction() {
                         <CardTitle className="font-sans text-2xl font-bold tracking-tight text-gray-900">
                             Transações
                         </CardTitle>
-                        <p className="text-sm text-gray-500">
+                        <CardDescription className="text-sm text-gray-500">
                             Gerencie todas as suas transações financeiras
-                        </p>
+                        </CardDescription>
                     </div>
                     <Button type="button" className="h-10 gap-2 px-4 font-medium" onClick={() => setOpen(true)}>
                         <Plus className="size-4" strokeWidth={2} aria-hidden />
