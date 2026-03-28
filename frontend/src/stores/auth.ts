@@ -107,8 +107,8 @@ export const useAuthStore = create<AuthState>()(
                         return true
                     }
                     return false
-                } catch (error) {
-                    console.error('Erro ao registrar usuário:', error)
+                } catch (error: any) {
+                    console.log('Erro ao registrar usuário:', error.message)
                     return false
                 }
             },

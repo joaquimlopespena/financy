@@ -7,6 +7,7 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { cn } from "../../lib/utils";
 import logo from "../../assets/logo.svg";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -121,6 +122,7 @@ export default function Login() {
                     </Button>
                 </CardContent>
             </Card>
+            <Toaster />
         </div>
     );
 }

@@ -9,6 +9,7 @@ import { cn } from "../../lib/utils";
 import logo from "../../assets/logo.svg";
 import { useAuthStore } from "../../stores/auth";
 import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Registrar() {
     const [showPassword, setShowPassword] = useState(false);
@@ -26,13 +27,14 @@ export default function Registrar() {
         try {
             const result = await register({ name, email, password });
 
-
+            console.log(result);
             if (result) {
                 toast.success('Usuário registrado com sucesso');
             } else {
                 toast.error('Erro ao registrar usuário');
             }
         } catch (error: any) {
+            console.error('Erro ao registrar usuário:', error)
             toast.error("Erro ao realizar o cadastro")
         } finally {
             setLoading(false)
@@ -160,6 +162,7 @@ export default function Registrar() {
                     </div>
                 </CardContent>
             </Card>
+            <Toaster />
         </div>
     )
 }
