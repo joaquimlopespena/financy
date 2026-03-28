@@ -4,8 +4,10 @@ import { Card } from "@/components/ui/card";
 import type { CategoryTone } from "@/lib/mock";
 import { cn } from "@/lib/utils";
 import { Briefcase, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 import type { Category } from "@/types";
 import { CATEGORY_ICON_OPTIONS } from "./category-icon-picker";
+import { CategoryDeleteDialog } from "./category-delete-dialog";
 
 const toneIconBox: Record<CategoryTone, { box: string; icon: string }> = {
     blue: { box: "bg-blue-light", icon: "text-blue-base" },
@@ -40,6 +42,15 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
     const CategoryIcon =
         CATEGORY_ICON_OPTIONS.find((o) => o.id === icon)?.Icon ?? Briefcase;
 
+    const [deleteOpen, setDeleteOpen] = useState(false);
+
+    const handleDelete = (categoryId: string) => {
+        console.log(categoryId);
+        // void submitDelete({
+        //     id: category.id,
+        // });
+    };
+
     return (
         <Card className="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-none ring-0">
             <div className="flex items-start justify-between gap-3">
@@ -62,9 +73,17 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
                         size="icon-sm"
                         className="size-8 rounded-md border-gray-200 bg-white shadow-none"
                         aria-label={`Excluir ${name}`}
+                        onClick={() => setDeleteOpen(true)}
                     >
                         <Trash2 className="size-4 text-red-base" strokeWidth={2} aria-hidden />
                     </Button>
+                    <CategoryDeleteDialog
+                        open={deleteOpen}
+                        onOpenChange={setDeleteOpen}
+                        categoryName={name}
+                        countTransactions={countTransactions}
+                        onConfirm={() => handleDelete(category.id)}
+                    />
                     <Button
                         type="button"
                         variant="outline"
