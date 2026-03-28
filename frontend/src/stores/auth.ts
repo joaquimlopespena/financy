@@ -51,7 +51,6 @@ export const useAuthStore = create<AuthState>()(
 
                     if (data?.login) {
                         const { token, user } = data.login as LoginMutationData['login']
-                        localStorage.setItem('token', token)
                         set({
                             user: {
                                 id: user.id,
