@@ -5,16 +5,18 @@ import { Label } from "@/components/ui/label";
 import { Plus, Search } from "lucide-react";
 import { SelectForm } from "./components/Select";
 import { MonthYearPicker } from "./components/month-year-picker";
-import { MOCK_CATEGORIES } from "@/lib/mock";
+import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
 import { TransactionsTable } from "./components/transactions-table";
 import { ModalFromTransaction } from "./components/modal-from-transaction";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Transaction } from "@/types";
 import { format, startOfMonth } from "date-fns";
 import { useQuery } from "@apollo/client/react";
 import { GET_PAGINATED_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
+import type { TransactionKind } from "./components/transaction-type-segment";
 
 const PAGE_SIZE = 10;
+const SEARCH_DEBOUNCE_MS = 350;
 
 type PaginatedData = {
     paginte: {
@@ -25,21 +27,64 @@ type PaginatedData = {
     };
 };
 
+type CategoriesQueryData = {
+    categories: { id: string; name: string }[];
+};
+
+const ALL_SELECT = "all" as const;
+
+function toGqlTransactionType(kind: TransactionKind | null): "INCOME" | "EXPENSE" | undefined {
+    if (kind === "income") return "INCOME";
+    if (kind === "expense") return "EXPENSE";
+    return undefined;
+}
+
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */
 export default function Transaction() {
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [type, setType] = useState<TransactionKind | null>(null);
+    const [categoryId, setCategoryId] = useState<string | null>(null);
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [periodMonth, setPeriodMonth] = useState(() => startOfMonth(new Date()));
     const periodKey = format(periodMonth, "yyyy-MM");
 
+    useEffect(() => {
+        const id = window.setTimeout(() => {
+            setDebouncedSearch(search.trim());
+        }, SEARCH_DEBOUNCE_MS);
+        return () => window.clearTimeout(id);
+    }, [search]);
+
+    const { data: categoriesData } = useQuery<CategoriesQueryData>(GET_CATEGORIES);
+
+    const categoryOptions = useMemo(
+        () => (categoriesData?.categories ?? []).map((c) => ({ value: c.id, label: c.name })),
+        [categoriesData?.categories],
+    );
+
+    const paginateFilterFields = useMemo(() => {
+        const gqlType = toGqlTransactionType(type);
+        return {
+            limit: PAGE_SIZE,
+            date: periodKey,
+            ...(debouncedSearch.length > 0 ? { search: debouncedSearch } : {}),
+            ...(gqlType != null ? { type: gqlType } : {}),
+            ...(categoryId != null && categoryId.length > 0 ? { categoryId } : {}),
+        };
+    }, [periodKey, debouncedSearch, type, categoryId]);
+
+    const filter = useMemo(() => ({ ...paginateFilterFields, page }), [paginateFilterFields, page]);
+
     const { data, refetch } = useQuery<PaginatedData>(GET_PAGINATED_TRANSACTIONS, {
-        variables: { filter: { page, limit: PAGE_SIZE, date: periodKey } },
+        variables: { filter },
         notifyOnNetworkStatusChange: true,
     });
 
     useEffect(() => {
         setPage(1);
-    }, [periodKey]);
+    }, [periodKey, debouncedSearch, type, categoryId]);
 
     const pag = data?.paginte;
     const transactions = pag?.transactions ?? [];
@@ -68,7 +113,7 @@ export default function Transaction() {
     const handleSuccess = () => {
         setOpen(false);
         setPage(1);
-        void refetch({ filter: { page: 1, limit: PAGE_SIZE, date: periodKey } });
+        void refetch({ filter: { ...paginateFilterFields, page: 1 } });
     };
 
 
@@ -107,6 +152,8 @@ export default function Transaction() {
                                     <Input
                                         id="search"
                                         type="search"
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
                                         placeholder="Buscar por descrição"
                                         autoComplete="off"
                                         className="h-10 rounded-lg border-gray-200 bg-white pl-10 pr-3 text-sm text-gray-900 placeholder:text-gray-400"
@@ -120,6 +167,10 @@ export default function Transaction() {
                                 <SelectForm
                                     id="filter-type"
                                     label="Filtrar por tipo de transação"
+                                    value={type ?? ALL_SELECT}
+                                    onValueChange={(value) =>
+                                        setType(value === ALL_SELECT ? null : (value as TransactionKind))
+                                    }
                                     options={[
                                         { value: "income", label: "Receitas" },
                                         { value: "expense", label: "Despesas" },
@@ -134,10 +185,11 @@ export default function Transaction() {
                                     id="filter-category"
                                     label="Filtrar por categoria"
                                     allLabel="Todas"
-                                    options={MOCK_CATEGORIES.map((category) => ({
-                                        value: category.id,
-                                        label: category.label,
-                                    }))}
+                                    value={categoryId ?? ALL_SELECT}
+                                    onValueChange={(value) =>
+                                        setCategoryId(value === ALL_SELECT ? null : value)
+                                    }
+                                    options={categoryOptions}
                                 />
                             </div>
                             <div className="space-y-2">
