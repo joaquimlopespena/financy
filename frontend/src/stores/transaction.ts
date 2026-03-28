@@ -3,6 +3,7 @@ import {
     DELETE_TRANSACTION,
     UPDATE_TRANSACTION,
 } from "@/lib/graphql/mutations/transaction";
+import { GET_DASHBOARD } from "@/lib/graphql/queries/dashboard";
 import { GET_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
 import { useAuthStore } from "@/stores/auth";
 import type { CreateTransactionInput, Transaction, UpdateTransactionInput } from "@/types";
@@ -58,6 +59,8 @@ export function useTransactionCreate(options?: UseTransactionMutationOptions) {
                         categoryId: input.categoryId,
                     },
                 },
+                refetchQueries: [{ query: GET_DASHBOARD }],
+                awaitRefetchQueries: true,
                 update: (cache, { data: mutationData }) => {
                     const created = (mutationData as { createTransaction?: Transaction } | null | undefined)
                         ?.createTransaction;
@@ -107,6 +110,8 @@ export function useTransactionUpdate(options?: UseTransactionMutationOptions) {
                         categoryId: input.categoryId ?? undefined,
                     },
                 },
+                refetchQueries: [{ query: GET_DASHBOARD }],
+                awaitRefetchQueries: true,
                 update: (cache, { data: mutationData }) => {
                     const updated = (mutationData as { updateTransaction?: Transaction } | null | undefined)
                         ?.updateTransaction;
@@ -149,6 +154,8 @@ export function useTransactionDelete() {
         try {
             const result = await deleteTransaction({
                 variables: { id },
+                refetchQueries: [{ query: GET_DASHBOARD }],
+                awaitRefetchQueries: true,
                 update: (cache, { data: mutationData }) => {
                     const ok = (mutationData as { deleteTransaction?: boolean } | undefined)?.deleteTransaction;
                     if (!ok) return;
