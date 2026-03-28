@@ -49,6 +49,8 @@ export const useAuthStore = create<AuthState>()(
                         variables: { input: loginInput },
                     });
 
+                    console.log(data);
+
                     if (data?.login) {
                         const { token, user } = data.login as LoginMutationData['login']
                         set({

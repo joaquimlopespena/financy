@@ -7,7 +7,7 @@ const httpLink = new HttpLink({
 });
 
 const authLink = new SetContextLink((prevContext: any) => {
-    const token = useAuthStore((state) => state.token)
+    const token = useAuthStore.getState().token;
     return {
         headers: {
             ...prevContext.headers,

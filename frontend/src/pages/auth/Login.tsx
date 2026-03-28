@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, Lock, Mail, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, Mail, UserPlus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -8,10 +8,37 @@ import { Label } from "../../components/ui/label";
 import { cn } from "../../lib/utils";
 import logo from "../../assets/logo.svg";
 import { Toaster } from "@/components/ui/sonner";
+import { useAuthStore } from "@/stores/auth";
+import { toast } from "sonner";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false)
 
+    const login = useAuthStore((state) => state.login);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const result = await login({ email, password });
+
+            console.log(result);
+            if (result) {
+                toast.success('Login realizado com sucesso');
+            } else {
+                toast.error('Erro ao fazer login');
+            }
+        } catch (error: any) {
+            console.error('Erro ao fazer login:', error)
+            toast.error("Erro ao realizar o login")
+        } finally {
+            setLoading(false)
+        }
+    }
     return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-gray-100 px-4 py-10">
             <img src={logo} alt="Financy" className="h-auto w-44" />
@@ -32,7 +59,7 @@ export default function Login() {
                 </CardHeader>
 
                 <CardContent className="space-y-6 pb-10 pt-6 px-3 sm:px-10">
-                    <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium text-gray-800">
                                 E-mail
@@ -45,6 +72,8 @@ export default function Login() {
                                 <Input
                                     id="email"
                                     type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     autoComplete="email"
                                     placeholder="mail@exemplo.com"
                                     className="h-10 rounded-lg border-gray-200 bg-white pl-10 pr-3 text-base placeholder:text-gray-400 md:text-base"
@@ -64,9 +93,12 @@ export default function Login() {
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     autoComplete="current-password"
                                     placeholder="Digite sua senha"
                                     className="h-10 rounded-lg border-gray-200 bg-white pl-10 pr-11 text-base placeholder:text-gray-400 md:text-base"
+                                    required
                                 />
                                 <button
                                     type="button"
@@ -100,8 +132,8 @@ export default function Login() {
                             </a>
                         </div>
 
-                        <Button type="submit" className="h-10 py-3 w-full text-base font-medium">
-                            Entrar
+                        <Button type="submit" className="h-10 py-3 w-full text-base font-medium" disabled={loading}>
+                            {loading ? <Loader2 className="size-4 animate-spin" /> : 'Entrar'}
                         </Button>
                     </form>
 
