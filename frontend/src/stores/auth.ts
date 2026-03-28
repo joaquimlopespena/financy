@@ -75,13 +75,15 @@ export const useAuthStore = create<AuthState>()(
                     return false
                 }
             },
-            logout: () =>
+            logout: () =>{
                 set({
                     user: null,
                     token: null,
                     refreshToken: null,
                     isAuthenticated: false,
-                }),
+                })
+                localStorage.removeItem('auth');
+            },
             setIsLoading: (isLoading) => set({ isLoading }),
             register: async (registerInput: RegisterInput) => {
                 set({ isLoading: true });

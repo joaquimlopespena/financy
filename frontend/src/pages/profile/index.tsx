@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/stores/auth";
 import { LogOut, Mail, User } from "lucide-react";
-
+import { toast } from "sonner";
 const PROFILE = {
     initials: "CT",
     name: "Conta teste",
@@ -11,6 +12,12 @@ const PROFILE = {
 } as const;
 
 export default function Profile() {
+    const logout = useAuthStore((state) => state.logout);
+
+    const handleLogout = async () => {
+        await logout();
+        toast.success('Sessão encerrada com sucesso');
+    }
     return (
         <div className="flex w-full flex-col items-center py-8">
             <Card className="w-full max-w-lg rounded-xl border border-gray-200 bg-white shadow-sm ring-0">
@@ -90,6 +97,7 @@ export default function Profile() {
                         type="button"
                         variant="outline"
                         className="h-11 w-full gap-2 rounded-lg border-gray-200 bg-white text-base font-medium text-gray-900 shadow-none hover:bg-gray-50"
+                        onClick={handleLogout}
                     >
                         <LogOut className="size-4 text-red-base" strokeWidth={2} aria-hidden />
                         Sair da conta
