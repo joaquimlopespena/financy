@@ -2,9 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatBrl } from "@/lib/format";
-import type { CategorySummary, CategoryTone } from "@/lib/mock";
+import type { CategoryTone } from "@/lib/mock";
+import type { Transaction } from "@/types";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 
 const categoryBadgeClass: Record<CategoryTone, string> = {
     blue: "border-0 bg-blue-light text-blue-dark hover:bg-blue-light",
@@ -17,11 +19,37 @@ const categoryBadgeClass: Record<CategoryTone, string> = {
     mint: "border-0 bg-green-light text-brand-dark hover:bg-green-light",
 };
 
+function toCategoryTone(color: string | null | undefined): CategoryTone {
+    const c = color ?? "green";
+    return c in categoryBadgeClass ? (c as CategoryTone) : "green";
+}
+
+/** Soma despesas por categoria (para o total exibido no card). */
+function expenseTotalsByCategoryId(transactions: Transaction[]): Map<string, number> {
+    const map = new Map<string, number>();
+    for (const tx of transactions) {
+        if (tx.type.toUpperCase() !== "EXPENSE") continue;
+        const id = tx.category.id;
+        map.set(id, (map.get(id) ?? 0) + tx.amount);
+    }
+    return map;
+}
+
 interface CategoriesCardProps {
-    categories: CategorySummary[];
+    categories: DashboardCategory[];
 }
 
 export function CategoriesCard({ categories }: CategoriesCardProps) {
+    const rows = useMemo(() => {
+        return categories.map((cat) => ({
+            id: cat.id,
+            label: cat.name,
+            tone: toCategoryTone(cat.color),
+            itemCount: cat.countTransactions,
+            total: 0,
+        }));
+    }, [categories]);
+
     return (
         <Card className="min-w-0 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ring-0">
             <CardHeader className="flex flex-row items-center justify-between gap-4 border-b border-gray-200 px-6 pb-4 pt-6">
@@ -38,7 +66,7 @@ export function CategoriesCard({ categories }: CategoriesCardProps) {
                 </Button>
             </CardHeader>
             <CardContent className="divide-y divide-gray-200 p-0">
-                {categories.map((cat) => (
+                {rows.map((cat) => (
                     <div
                         key={cat.id}
                         className="flex items-center justify-between gap-3 px-4 py-4 sm:px-6"

@@ -77,3 +77,11 @@ export interface UpdateTransactionInput {
     transactionDate?: string | null;
     categoryId?: string | null;
 }
+
+export interface Dashboard {
+    total_balance: number;
+    total_income: number;
+    total_expenses: number;
+    categories: Category[];
+    transactions: Transaction[];
+}
