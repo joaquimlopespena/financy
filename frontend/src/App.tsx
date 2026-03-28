@@ -1,5 +1,5 @@
 import { Layout } from "./components/Layout"
-import Category from "./pages/Category"
+import Profile from "./pages/profile"
 
 function App() {
 
@@ -10,7 +10,8 @@ function App() {
       {/* <Registrar /> */}
       {/* <Dashboard /> */}
       {/* <Transaction /> */}
-      <Category />
+      {/* <Category /> */}
+      <Profile />
     </Layout>
   )
 }

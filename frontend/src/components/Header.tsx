@@ -15,7 +15,7 @@ import { cn } from "../lib/utils";
 const navItems = [
     { label: "Dashboard", href: "#", active: false},
     { label: "Transações", href: "#", active: false },
-    { label: "Categorias", href: "#", active: true },
+    { label: "Categorias", href: "#", active: false },
 ] as const;
 
 export function Header() {
