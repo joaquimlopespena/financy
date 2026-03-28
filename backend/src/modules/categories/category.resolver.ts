@@ -87,4 +87,11 @@ export class CategoryResolver {
         if (!row) throw new Error('Category not found');
         return await this.transactionService.findByCategoryId(row.id, category.userId);
     }
+
+    @FieldResolver(() => [CategoryModel])
+    async countTransactions(@Root() category: CategoryModel): Promise<number> {
+        const row = await this.categoryService.findById(category.id, category.userId);
+        if (!row) throw new Error('Category not found');
+        return await this.transactionService.countByCategoryId(row.id, category.userId);
+    }
 }

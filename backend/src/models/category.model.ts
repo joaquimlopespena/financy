@@ -1,4 +1,4 @@
-import { Field, GraphQLISODateTime, ID, ObjectType } from "type-graphql";
+import { Field, GraphQLISODateTime, ID, Int, ObjectType } from "type-graphql";
 import { UserModel } from "./user.model";
 import { TransactionModel } from "./transaction.model";
 
@@ -34,5 +34,8 @@ export class CategoryModel {
 
     @Field(() => [TransactionModel])
     transactions: TransactionModel[];
+
+    @Field(() => Int)
+    countTransactions: number;
 
 }
