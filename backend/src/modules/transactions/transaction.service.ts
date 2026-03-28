@@ -24,9 +24,11 @@ export class TransactionService {
         return transaction as unknown as TransactionModel;
     }
 
-    async findByUserId(userId: string): Promise<TransactionModel[]> {
+    async findByUserId(userId: string, orderBy: string = "desc", safeLimit: number|null = null): Promise<TransactionModel[]> {
         const transactions = await prisma.transaction.findMany({
             where: { userId },
+            orderBy: { transactionDate: "desc" },
+            take: safeLimit,
         });
         return transactions as unknown as TransactionModel[];
     }

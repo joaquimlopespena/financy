@@ -15,9 +15,11 @@ export class CategoryService {
         return category as unknown as CategoryModel;    
     }
 
-    async findByUserId(userId: string): Promise<CategoryModel[]> {
+    async findByUserId(userId: string, safeLimit: number|null = null): Promise<CategoryModel[]> {
         const categories = await prisma.category.findMany({
             where: { userId },
+            take: safeLimit,
+            orderBy: { createdAt: "desc" },
         });
         return categories as unknown as CategoryModel[];
     }
