@@ -5,10 +5,13 @@ export class CreateCategoryInput {
     @Field(() => String)
     name: string;
 
-    @Field(() => Date, { nullable: true })
-    createdAt?: Date;
+    @Field(() => String, { nullable: true })
+    color?: string;
 
-    @Field(() => Date, { nullable: true })
-    updatedAt?: Date;
+    @Field(() => String, { nullable: true })
+    icon?: string;
+
+    @Field(() => String, { nullable: true })
+    description?: string;
 }
 
