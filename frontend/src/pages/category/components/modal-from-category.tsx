@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CategoryColorPicker } from "./category-color-picker";
 import { CategoryIconPicker } from "./category-icon-picker";
+import { useCategoryCreate } from "@/stores/category";
 
 interface CreateIdeiaDialogProps {
     open: boolean;
@@ -19,12 +20,43 @@ interface CreateIdeiaDialogProps {
     onSuccess: () => void;
 }
 
-export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }: CreateIdeiaDialogProps) {
+export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeiaDialogProps) {
     const [iconId, setIconId] = useState("briefcase");
     const [colorId, setColorId] = useState("green");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+
+    function resetForm() {
+        setIconId("briefcase");
+        setColorId("green");
+        setTitle("");
+        setDescription("");
+    }
+
+    const handleOpenChange = (next: boolean) => {
+        if (!next) resetForm();
+        onOpenChange(next);
+    };
+
+    const { submitCreate, loading } = useCategoryCreate({
+        onOpenChange: handleOpenChange,
+        onSuccess,
+    });
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        void submitCreate({
+            name: title.trim(),
+            description: description.trim() || undefined,
+            icon: iconId,
+            color: colorId,
+        });
+    };
+
+    const handleClose = () => handleOpenChange(false);
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent
                 showCloseButton={false}
                 className="gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white p-0 shadow-lg sm:max-w-lg"
@@ -43,26 +75,23 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }:
                         variant="outline"
                         size="icon-sm"
                         className="shrink-0 rounded-lg border-gray-200 bg-white text-gray-600 shadow-none hover:bg-gray-50"
-                        onClick={() => onOpenChange(false)}
+                        onClick={handleClose}
                     >
                         <XIcon className="size-4" strokeWidth={2} aria-hidden />
                         <span className="sr-only">Fechar</span>
                     </Button>
                 </DialogHeader>
 
-                <form
-                    className="flex flex-col gap-6 px-6 pb-6"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                    }}
-                >
+                <form className="flex flex-col gap-6 px-6 pb-6" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                         <Label htmlFor="category-name" className="text-sm font-medium text-gray-800">
                             Título
                         </Label>
                         <Input
                             id="category-name"
-                            name="title"
+                            name="name"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             placeholder="Ex. Alimentação"
                             className="h-12 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400"
                         />
@@ -74,6 +103,8 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }:
                         <Input
                             id="category-description"
                             name="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             placeholder="Descrição da categoria"
                             className="h-12 rounded-lg border border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400"
                         />
@@ -99,9 +130,10 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess: _onSuccess }:
                     </div>
                     <Button
                         type="submit"
-                        className="h-11 w-full rounded-xl bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
+                        disabled={loading || !title.trim()}
+                        className="h-11 w-full rounded-xl bg-brand-base text-base font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
                     >
-                        Salvar
+                        {loading ? "Salvando…" : "Salvar"}
                     </Button>
                 </form>
             </DialogContent>
