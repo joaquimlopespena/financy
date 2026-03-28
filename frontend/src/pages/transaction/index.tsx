@@ -4,11 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Search } from "lucide-react";
 import { SelectForm } from "./components/Select";
-import { MOCK_CATEGORIES, PERIOD_OPTIONS_2026 } from "@/lib/mock";
+import { MonthYearPicker } from "./components/month-year-picker";
+import { MOCK_CATEGORIES } from "@/lib/mock";
 import { TransactionsTable } from "./components/transactions-table";
 import { ModalFromTransaction } from "./components/modal-from-transaction";
 import { useEffect, useState } from "react";
 import type { Transaction } from "@/types";
+import { format, startOfMonth } from "date-fns";
 import { useQuery } from "@apollo/client/react";
 import { GET_PAGINATED_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
 
@@ -27,11 +29,17 @@ type PaginatedData = {
 export default function Transaction() {
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
+    const [periodMonth, setPeriodMonth] = useState(() => startOfMonth(new Date()));
+    const periodKey = format(periodMonth, "yyyy-MM");
 
     const { data, refetch } = useQuery<PaginatedData>(GET_PAGINATED_TRANSACTIONS, {
-        variables: { page, limit: PAGE_SIZE },
+        variables: { filter: { page, limit: PAGE_SIZE, date: periodKey } },
         notifyOnNetworkStatusChange: true,
     });
+
+    useEffect(() => {
+        setPage(1);
+    }, [periodKey]);
 
     const pag = data?.paginte;
     const transactions = pag?.transactions ?? [];
@@ -60,7 +68,7 @@ export default function Transaction() {
     const handleSuccess = () => {
         setOpen(false);
         setPage(1);
-        void refetch({ page: 1, limit: PAGE_SIZE });
+        void refetch({ filter: { page: 1, limit: PAGE_SIZE, date: periodKey } });
     };
 
 
@@ -136,12 +144,10 @@ export default function Transaction() {
                                 <Label htmlFor="filter-period" className="text-sm font-medium text-gray-800">
                                     Período
                                 </Label>
-                                <SelectForm
+                                <MonthYearPicker
                                     id="filter-period"
-                                    label="Filtrar por período"
-                                    options={PERIOD_OPTIONS_2026}
-                                    defaultValue="2026-01"
-                                    showAllOption={false}
+                                    value={periodMonth}
+                                    onChange={setPeriodMonth}
                                 />
                             </div>
                         </div>

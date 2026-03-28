@@ -47,6 +47,15 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+input FilterTransactionInput {
+  categoryId: String
+  date: String
+  limit: Int!
+  page: Int!
+  search: String
+  type: TransactionType
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -81,7 +90,7 @@ type Query {
   categories: [CategoryModel!]!
   category(id: String!): CategoryModel!
   dashboard: DashboardModel!
-  paginte(limit: Int!, page: Int!): PaginatedTransactionModel!
+  paginte(filter: FilterTransactionInput!): PaginatedTransactionModel!
   transaction(id: String!): TransactionModel!
   transactions: [TransactionModel!]!
   user(id: String!): UserModel!
