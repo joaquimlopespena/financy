@@ -1,11 +1,11 @@
-import { UserService, userService } from "../users/user.service";
+import { UserService } from "../users/user.service";
 import { LoginOutput, RegisterOutput } from "./dto/auth.output";
 import { LoginInput, RegisterInput } from "./dto/login.input";
 import { signJwt } from "../../shared/utils/jwt";
 import { comparePassword } from "../../shared/utils/hash";
 
 export class AuthService {
-    constructor(private readonly userService: UserService) { }
+    private userService = new UserService();
 
     async register(input: RegisterInput): Promise<RegisterOutput> {
         const user = await this.userService.create(input);
@@ -41,5 +41,3 @@ export class AuthService {
         };
     }
 }
-
-export const authService = new AuthService(userService);
