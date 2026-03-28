@@ -1,23 +1,32 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MOCK_CATEGORIES, MOCK_TRANSACTIONS } from "@/lib/mock";
 import { CategoryGridCard } from "./components/category-grid-card";
 import { ArrowUpDown, Plus, Tag, Utensils } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CategoryStatCard } from "./components/category-stat-card";
 import { ModalFromCategory } from "./components/modal-from-category";
+import { useQuery } from "@apollo/client/react";
+import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
+import type { Category } from "@/types";
 
 export default function Category() {
     const [open, setOpen] = useState(false);
+    const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
 
     const { totalCategories, totalTransactions, topCategoryLabel } = useMemo(() => {
-        const top = MOCK_CATEGORIES.reduce((a, b) => (a.itemCount >= b.itemCount ? a : b));
+        const categories = data?.categories ?? [];
+        const top =
+            categories.length > 0
+                ? categories.reduce((a, b) =>
+                      a.countTransactions >= b.countTransactions ? a : b,
+                  )
+                : undefined;
         return {
-            totalCategories: MOCK_CATEGORIES.length,
-            totalTransactions: MOCK_TRANSACTIONS.length,
-            topCategoryLabel: top.label,
+            totalCategories: categories.length,
+            totalTransactions: categories.reduce((sum, cat) => sum + cat.countTransactions, 0),
+            topCategoryLabel: top?.name,
         };
-    }, []);
+    }, [data]);
 
     const handleSuccess = () => {
         setOpen(false);
@@ -57,13 +66,13 @@ export default function Category() {
                 />
                 <CategoryStatCard
                     icon={Utensils}
-                    value={topCategoryLabel}
+                    value={topCategoryLabel ?? "Nenhuma categoria encontrada"}
                     label="Categoria mais utilizada"
                     iconClassName="text-blue-base"
                 />
             </div>
             <div className="mt-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {MOCK_CATEGORIES.map((category) => (
+                {(data?.categories ?? []).map((category) => (
                     <CategoryGridCard key={category.id} category={category} />
                 ))}
             </div>

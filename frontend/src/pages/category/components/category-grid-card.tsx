@@ -1,9 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { CategorySummary, CategoryTone } from "@/lib/mock";
+import type { CategoryTone } from "@/lib/mock";
 import { cn } from "@/lib/utils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Briefcase, Pencil, Trash2 } from "lucide-react";
+import type { Category } from "@/types";
+import { CATEGORY_ICON_OPTIONS } from "./category-icon-picker";
 
 const toneIconBox: Record<CategoryTone, { box: string; icon: string }> = {
     blue: { box: "bg-blue-light", icon: "text-blue-base" },
@@ -28,12 +30,15 @@ const toneBadge: Record<CategoryTone, string> = {
 };
 
 interface CategoryGridCardProps {
-    category: CategorySummary;
+    category: Category;
 }
 
 export function CategoryGridCard({ category }: CategoryGridCardProps) {
-    const { label, description, itemCount, tone, Icon } = category;
+    const { name, description, icon, countTransactions } = category;
+    const tone = category.color as keyof typeof toneIconBox;
     const styles = toneIconBox[tone];
+    const CategoryIcon =
+        CATEGORY_ICON_OPTIONS.find((o) => o.id === icon)?.Icon ?? Briefcase;
 
     return (
         <Card className="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-none ring-0">
@@ -44,7 +49,11 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
                         styles.box,
                     )}
                 >
-                    <Icon className={cn("size-5 stroke-2", styles.icon)} aria-hidden />
+                    <CategoryIcon
+                        className={cn("size-5 stroke-2", styles.icon)}
+                        strokeWidth={2}
+                        aria-hidden
+                    />
                 </div>
                 <div className="flex shrink-0 gap-1">
                     <Button
@@ -52,7 +61,7 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
                         variant="outline"
                         size="icon-sm"
                         className="size-8 rounded-md border-gray-200 bg-white shadow-none"
-                        aria-label={`Excluir ${label}`}
+                        aria-label={`Excluir ${name}`}
                     >
                         <Trash2 className="size-4 text-red-base" strokeWidth={2} aria-hidden />
                     </Button>
@@ -61,7 +70,7 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
                         variant="outline"
                         size="icon-sm"
                         className="size-8 rounded-md border-gray-200 bg-white shadow-none"
-                        aria-label={`Editar ${label}`}
+                        aria-label={`Editar ${name}`}
                     >
                         <Pencil className="size-4 text-gray-700" strokeWidth={2} aria-hidden />
                     </Button>
@@ -69,7 +78,7 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
             </div>
 
             <div className="mt-4 min-h-0 flex-1 space-y-1">
-                <h3 className="text-base font-bold leading-tight text-gray-900">{label}</h3>
+                <h3 className="text-base font-bold leading-tight text-gray-900">{name}</h3>
                 <p className="text-sm leading-snug text-gray-500">{description}</p>
             </div>
 
@@ -81,10 +90,10 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
                         toneBadge[tone],
                     )}
                 >
-                    {label}
+                    {name}
                 </Badge>
                 <span className="shrink-0 text-sm text-gray-500">
-                    {itemCount} {itemCount === 1 ? "item" : "itens"}
+                    {countTransactions} {countTransactions === 1 ? "item" : "itens"}
                 </span>
             </div>
         </Card>

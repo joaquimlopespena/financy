@@ -10,6 +10,30 @@ export const GET_CATEGORIES = gql`
             description
             createdAt
             updatedAt
+            countTransactions
+            user {
+                id
+                name
+            }
+        }
+    }
+`;
+
+export const GET_CATEGORY = gql`
+    query category($id: String!) {
+        category(id: $id) {
+            id
+            name
+            color
+            icon
+            description
+            createdAt
+            updatedAt
+            countTransactions
+            user {
+                id
+                name
+            }
         }
     }
 `;

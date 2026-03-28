@@ -2,7 +2,7 @@ export interface User {
     id: string
     name: string
     email: string
-    role?: string
+    role?: string | null
     createdAt?: string
     updatedAt?: string
 }
@@ -19,13 +19,18 @@ export interface LoginInput {
 }
 
 export interface Category {
-    id: string
-    name: string
-    color: string
-    icon: string
-    description: string
-    createdAt: string
-    updatedAt: string
+    id: string;
+    name: string;
+    color: string;
+    icon: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    countTransactions: number;
+    user: {
+        id: string;
+        name: string;
+    };
 }
 
 /** Alinhado ao `CreateCategoryInput` do GraphQL / backend */

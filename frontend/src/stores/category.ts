@@ -1,6 +1,7 @@
 import { CREATE_CATEGORY } from "@/lib/graphql/mutations/category";
+import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
 import { useAuthStore } from "@/stores/auth";
-import type { CreateCategoryInput } from "@/types";
+import type { Category, CreateCategoryInput } from "@/types";
 import { useMutation } from "@apollo/client/react";
 import { toast } from "sonner";
 
@@ -24,9 +25,9 @@ function getGraphqlErrorMessage(error: unknown): string | undefined {
 function handleMutationFailure(error: unknown) {
     const gqlErrors =
         error &&
-        typeof error === "object" &&
-        "graphQLErrors" in error &&
-        Array.isArray((error as { graphQLErrors: { message: string }[] }).graphQLErrors)
+            typeof error === "object" &&
+            "graphQLErrors" in error &&
+            Array.isArray((error as { graphQLErrors: { message: string }[] }).graphQLErrors)
             ? (error as { graphQLErrors: { message: string }[] }).graphQLErrors
             : [];
     const unauthorized = gqlErrors.some((e) => e.message === "Unauthorized");
@@ -55,6 +56,26 @@ export function useCategoryCreate(options?: UseCategoryCreateOptions) {
                         icon: input.icon || undefined,
                         color: input.color || undefined,
                     },
+                },
+                update: (cache, { data: mutationData }) => {
+                    const created = (mutationData as { createCategory?: Category } | null | undefined)
+                        ?.createCategory;
+                    if (!created) return;
+                    const existing = cache.readQuery<{ categories: Category[] }>({ query: GET_CATEGORIES });
+                    if (!existing) return;
+                    const authUser = useAuthStore.getState().user;
+                    const newCategory: Category = {
+                        ...created,
+                        countTransactions: 0,
+                        user: {
+                            id: authUser?.id ?? "",
+                            name: authUser?.name ?? "",
+                        },
+                    };
+                    cache.writeQuery({
+                        query: GET_CATEGORIES,
+                        data: { categories: [...existing.categories, newCategory] },
+                    });
                 },
             });
 
