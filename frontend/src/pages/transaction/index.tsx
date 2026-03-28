@@ -8,16 +8,26 @@ import { MOCK_CATEGORIES, MOCK_TRANSACTIONS, PERIOD_OPTIONS_2026 } from "@/lib/m
 import { TransactionsTable } from "./components/transactions-table";
 import { ModalFromTransaction } from "./components/modal-from-transaction";
 import { useState } from "react";
+import type { Transaction } from "@/types";
+import { useQuery } from "@apollo/client/react";
+import { GET_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
 
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */
 export default function Transaction() {
     const [open, setOpen] = useState(false)
+
+    const { data, loading: transactionsLoading } = useQuery<{ transactions: Transaction[] }>(GET_TRANSACTIONS);
+
+    console.log(data);
+
     const handleOpenChange = (open: boolean) => {
         setOpen(open)
     }
     const handleSuccess = () => {
         setOpen(false)
     }
+
+
     return (
         <div>
             <Card className="border-0 bg-transparent p-0 shadow-none ring-0">

@@ -47,3 +47,33 @@ export interface UpdateCategoryInput {
     icon?: string | null
     color?: string | null
 }
+
+/** Transação como retornada pelas queries GraphQL (categoria parcial na lista). */
+export interface Transaction {
+    id: string;
+    title: string;
+    description: string;
+    amount: number;
+    type: string;
+    transactionDate: string;
+    category: Pick<Category, "id" | "name" | "color" | "icon">;
+}
+
+/** Alinhado ao `CreateTransactionInput` do GraphQL / backend */
+export interface CreateTransactionInput {
+    title: string;
+    description?: string | null;
+    amount: number;
+    type: string;
+    transactionDate: string;
+    categoryId: string;
+}
+
+export interface UpdateTransactionInput {
+    title?: string | null;
+    description?: string | null;
+    amount?: number | null;
+    type?: string | null;
+    transactionDate?: string | null;
+    categoryId?: string | null;
+}

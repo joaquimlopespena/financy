@@ -27,6 +27,11 @@ export const apolloClient = new ApolloClient({
                             return incoming;
                         },
                     },
+                    transactions: {
+                        merge(_existing, incoming) {
+                            return incoming;
+                        },
+                    },
                 },
             },
         },
