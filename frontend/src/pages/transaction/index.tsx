@@ -7,24 +7,53 @@ import { SelectForm } from "./components/Select";
 import { MOCK_CATEGORIES, PERIOD_OPTIONS_2026 } from "@/lib/mock";
 import { TransactionsTable } from "./components/transactions-table";
 import { ModalFromTransaction } from "./components/modal-from-transaction";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Transaction } from "@/types";
 import { useQuery } from "@apollo/client/react";
-import { GET_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
+import { GET_PAGINATED_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
+
+const PAGE_SIZE = 10;
+
+type PaginatedData = {
+    paginte: {
+        page: number;
+        total: number;
+        limit: number;
+        transactions: Transaction[];
+    };
+};
 
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */
 export default function Transaction() {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [page, setPage] = useState(1);
 
-    const { data } = useQuery<{ transactions: Transaction[] }>(GET_TRANSACTIONS);
-    const transactions = data?.transactions ?? [];
+    const { data, refetch } = useQuery<PaginatedData>(GET_PAGINATED_TRANSACTIONS, {
+        variables: { page, limit: PAGE_SIZE },
+        notifyOnNetworkStatusChange: true,
+    });
+
+    const pag = data?.paginte;
+    const transactions = pag?.transactions ?? [];
+    const total = pag?.total ?? 0;
+
+    useEffect(() => {
+        if (total === 0) {
+            if (page !== 1) setPage(1);
+            return;
+        }
+        const maxPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (page > maxPage) setPage(maxPage);
+    }, [total, page]);
 
     const handleOpenChange = (open: boolean) => {
         setOpen(open)
     }
     const handleSuccess = () => {
-        setOpen(false)
-    }
+        setOpen(false);
+        setPage(1);
+        void refetch({ page: 1, limit: PAGE_SIZE });
+    };
 
 
     return (
@@ -113,7 +142,13 @@ export default function Transaction() {
             </Card>
             <Card className="mt-6 w-full overflow-hidden border border-gray-200 bg-white shadow-sm ring-0">
                 <CardContent className="p-0">
-                    <TransactionsTable transactions={transactions} />
+                    <TransactionsTable
+                        transactions={transactions}
+                        total={total}
+                        page={pag?.page ?? page}
+                        pageSize={PAGE_SIZE}
+                        onPageChange={setPage}
+                    />
                 </CardContent>
             </Card>
             <ModalFromTransaction open={open} onOpenChange={handleOpenChange} onSuccess={handleSuccess} />

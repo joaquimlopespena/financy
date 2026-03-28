@@ -37,3 +37,27 @@ export const GET_TRANSACTIONS = gql`
         }
     }
 `;
+
+export const GET_PAGINATED_TRANSACTIONS = gql`
+    query GetPaginatedTransactions($page: Int!, $limit: Int!) {
+        paginte(page: $page, limit: $limit) {
+            page
+            total
+            limit
+            transactions {
+                id
+                title
+                description
+                amount
+                type
+                transactionDate
+                category {
+                    id
+                    name
+                    color
+                    icon
+                }
+            }
+        }
+    }
+`;

@@ -53,14 +53,36 @@ function isIncomeType(type: string): boolean {
 
 const COLUMNS = ["Descrição", "Data", "Categoria", "Tipo", "Valor", "Ações"] as const;
 
-interface TransactionsTableProps {
-    transactions: Transaction[];
+/** Lista de páginas com reticências quando há muitas. */
+function pageButtonItems(current: number, totalPages: number): (number | "gap")[] {
+    if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const set = new Set<number>([1, totalPages, current, current - 1, current + 1]);
+    const sorted = [...set].filter((p) => p >= 1 && p <= totalPages).sort((a, b) => a - b);
+    const out: (number | "gap")[] = [];
+    let prev = 0;
+    for (const p of sorted) {
+        if (prev > 0 && p - prev > 1) out.push("gap");
+        out.push(p);
+        prev = p;
+    }
+    return out;
 }
 
-export function TransactionsTable({ transactions }: TransactionsTableProps) {
-    const total = transactions.length;
-    const start = total === 0 ? 0 : 1;
-    const end = total;
+interface TransactionsTableProps {
+    transactions: Transaction[];
+    total: number;
+    page: number;
+    pageSize: number;
+    onPageChange: (page: number) => void;
+}
+
+export function TransactionsTable({ transactions, total, page, pageSize, onPageChange }: TransactionsTableProps) {
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
+    const end = total === 0 ? 0 : Math.min(page * pageSize, total);
+    const items = pageButtonItems(page, totalPages);
 
     return (
         <div className="flex flex-col">
@@ -200,44 +222,63 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     <span className="mx-2 text-gray-300">|</span>
                     <span>{total} resultados</span>
                 </p>
-                <nav
-                    className="flex items-center justify-center gap-1 sm:justify-end"
-                    aria-label="Paginação"
-                >
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon-sm"
-                        className="border-gray-200"
-                        disabled
-                        aria-label="Página anterior"
+                {total > 0 && (
+                    <nav
+                        className="flex flex-wrap items-center justify-center gap-1 sm:justify-end"
+                        aria-label="Paginação"
                     >
-                        <ChevronLeft className="size-4" />
-                    </Button>
-                    <Button
-                        type="button"
-                        size="sm"
-                        className="min-w-9 bg-brand-base text-white hover:bg-brand-dark"
-                        aria-current="page"
-                    >
-                        1
-                    </Button>
-                    <Button type="button" variant="outline" size="sm" className="min-w-9 border-gray-200">
-                        2
-                    </Button>
-                    <Button type="button" variant="outline" size="sm" className="min-w-9 border-gray-200">
-                        3
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon-sm"
-                        className="border-gray-200"
-                        aria-label="Próxima página"
-                    >
-                        <ChevronRight className="size-4" />
-                    </Button>
-                </nav>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-sm"
+                            className="border-gray-200"
+                            disabled={page <= 1}
+                            aria-label="Página anterior"
+                            onClick={() => onPageChange(page - 1)}
+                        >
+                            <ChevronLeft className="size-4" />
+                        </Button>
+                        {items.map((item, idx) =>
+                            item === "gap" ? (
+                                <span
+                                    key={`gap-${idx}`}
+                                    className="flex min-w-9 items-center justify-center text-sm text-gray-400"
+                                    aria-hidden
+                                >
+                                    …
+                                </span>
+                            ) : (
+                                <Button
+                                    key={item}
+                                    type="button"
+                                    variant={item === page ? "default" : "outline"}
+                                    size="sm"
+                                    className={cn(
+                                        "min-w-9",
+                                        item === page
+                                            ? "bg-brand-base text-white hover:bg-brand-dark"
+                                            : "border-gray-200",
+                                    )}
+                                    aria-current={item === page ? "page" : undefined}
+                                    onClick={() => onPageChange(item)}
+                                >
+                                    {item}
+                                </Button>
+                            ),
+                        )}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-sm"
+                            className="border-gray-200"
+                            disabled={page >= totalPages}
+                            aria-label="Próxima página"
+                            onClick={() => onPageChange(page + 1)}
+                        >
+                            <ChevronRight className="size-4" />
+                        </Button>
+                    </nav>
+                )}
             </div>
         </div>
     );
