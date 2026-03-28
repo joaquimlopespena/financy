@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
-import Category from "./pages/Category";
+import Category from "./pages/category";
 import Dashboard from "./pages/dashboard";
 import Login from "./pages/auth/Login";
 import Profile from "./pages/profile";
