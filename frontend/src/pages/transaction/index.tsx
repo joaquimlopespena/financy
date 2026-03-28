@@ -37,14 +37,22 @@ export default function Transaction() {
     const transactions = pag?.transactions ?? [];
     const total = pag?.total ?? 0;
 
+    /**
+     * Só ajusta página após resposta alinhada ao `page` pedido.
+     * Sem isso, `total === 0` no primeiro render (antes do fetch) ou dados
+     * antigos (ainda da página 1) resetavam para 1 ao clicar em outra página.
+     */
     useEffect(() => {
-        if (total === 0) {
+        if (!pag) return;
+        if (pag.page !== page) return;
+
+        if (pag.total === 0) {
             if (page !== 1) setPage(1);
             return;
         }
-        const maxPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        const maxPage = Math.max(1, Math.ceil(pag.total / PAGE_SIZE));
         if (page > maxPage) setPage(maxPage);
-    }, [total, page]);
+    }, [pag, page]);
 
     const handleOpenChange = (open: boolean) => {
         setOpen(open)
