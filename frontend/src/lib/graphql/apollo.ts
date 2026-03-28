@@ -18,5 +18,17 @@ const authLink = new SetContextLink((prevContext: any) => {
 
 export const apolloClient = new ApolloClient({
     link: ApolloLink.from([authLink, httpLink]),
-    cache: new InMemoryCache()
-})
+    cache: new InMemoryCache({
+        typePolicies: {
+            Query: {
+                fields: {
+                    categories: {
+                        merge(_existing, incoming) {
+                            return incoming;
+                        },
+                    },
+                },
+            },
+        },
+    }),
+});

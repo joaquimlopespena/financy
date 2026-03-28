@@ -105,14 +105,26 @@ export function useCategoryDelete() {
         try {
             const result = await deleteCategory({
                 variables: { id },
+                update: (cache, { data: mutationData }) => {
+                    const ok = (mutationData as { deleteCategory?: boolean } | undefined)?.deleteCategory;
+                    if (!ok) return;
+                    const existing = cache.readQuery<{ categories: Category[] }>({ query: GET_CATEGORIES });
+                    if (!existing) return;
+                    cache.writeQuery({
+                        query: GET_CATEGORIES,
+                        data: { categories: existing.categories.filter((c) => c.id !== id) },
+                    });
+                },
             });
             if (result.error) {
                 handleMutationFailure(result.error);
                 return;
             }
 
-            
-            toast.success("Categoria excluída com sucesso");
+            const data = result.data as { deleteCategory?: boolean } | undefined;
+            if (data?.deleteCategory) {
+                toast.success("Categoria excluída com sucesso");
+            }
         } catch (error: unknown) {
             handleMutationFailure(error);
         }
