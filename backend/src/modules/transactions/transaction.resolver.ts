@@ -1,6 +1,6 @@
-import { Arg, Field, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, Field, FieldResolver, Int, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { GqlUser } from "../../graphql/decorators/user.decorator";
-import { TransactionModel } from "../../models/transaction.model";
+import { PaginatedTransactionModel, TransactionModel } from "../../models/transaction.model";
 import { IsAuth } from "../../middlewares/auth.middleware";
 import { CreateTransactionInput } from "./dto/create-transaction.input";
 import { UserModel } from "../../models/user.model";
@@ -26,6 +26,15 @@ export class TransactionResolver {
             throw new Error("User not found");
         }
         return this.transactionService.create(input, user.id);
+    }
+
+    @Query(() => PaginatedTransactionModel)
+    @UseMiddleware(IsAuth)
+    async paginte(@GqlUser() user: UserModel, @Arg("page", () => Int) page: number, @Arg("limit", () => Int) limit: number): Promise<PaginatedTransactionModel> {
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return this.transactionService.paginate(user.id, page, limit);
     }
 
     @Query(() => [TransactionModel])

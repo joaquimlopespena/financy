@@ -1,7 +1,11 @@
 import { prisma } from '../../config/prisma';
-import { TransactionModel } from "../../models/transaction.model";
+import { PaginatedTransactionModel, TransactionModel } from "../../models/transaction.model";
 import { CreateTransactionInput } from "./dto/create-transaction.input";
 import { UpdateTransactionInput } from "./dto/update-transaction.input";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 15;
+const MAX_PAGE_SIZE = 100;
 
 export class TransactionService {
     async create(input: CreateTransactionInput, userId: string): Promise<TransactionModel> {
@@ -80,5 +84,36 @@ export class TransactionService {
             where: { categoryId, userId },
         });
         return count;
+    }
+
+    /**
+     * Lista transações do usuário com paginação.
+     * @param page — página 1-based (padrão: 1)
+     * @param limit — itens por página (padrão: 15, máx.: 100)
+     */
+    async paginate(
+        userId: string,
+        page: number = DEFAULT_PAGE,
+        limit: number = DEFAULT_PAGE_SIZE,
+    ): Promise<PaginatedTransactionModel> {
+        const safePage = Math.max(1, Math.floor(page));
+        const safeLimit = Math.min(Math.max(1, Math.floor(limit)), MAX_PAGE_SIZE);
+
+        const [rows, total] = await prisma.$transaction([
+            prisma.transaction.findMany({
+                where: { userId },
+                skip: (safePage - 1) * safeLimit,
+                take: safeLimit,
+                orderBy: { transactionDate: "desc" },
+            }),
+            prisma.transaction.count({ where: { userId } }),
+        ]);
+
+        return {
+            transactions: rows as unknown as TransactionModel[],
+            total,
+            page: safePage,
+            limit: safeLimit,   
+        };
     }
 }

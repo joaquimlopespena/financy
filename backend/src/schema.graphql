@@ -61,9 +61,17 @@ type Mutation {
   updateUser(input: UpdateUserInput!): UserModel!
 }
 
+type PaginatedTransactionModel {
+  limit: Int!
+  page: Int!
+  total: Int!
+  transactions: [TransactionModel!]!
+}
+
 type Query {
   categories: [CategoryModel!]!
   category(id: String!): CategoryModel!
+  paginte(limit: Int!, page: Int!): PaginatedTransactionModel!
   transaction(id: String!): TransactionModel!
   transactions: [TransactionModel!]!
   user(id: String!): UserModel!

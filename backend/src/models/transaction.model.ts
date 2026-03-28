@@ -1,4 +1,4 @@
-import { Field, Float, GraphQLISODateTime, ObjectType } from "type-graphql";
+import { Field, Float, GraphQLISODateTime, Int, ObjectType } from "type-graphql";
 import { UserModel } from "./user.model";
 import { CategoryModel } from "./category.model";
 
@@ -40,3 +40,18 @@ export class TransactionModel {
     @Field(() => GraphQLISODateTime)
     updatedAt: Date;
 }
+
+@ObjectType()
+export class PaginatedTransactionModel {
+    @Field(() => [TransactionModel])
+    transactions: TransactionModel[];
+
+    @Field(() => Int)
+    total: number;
+
+    @Field(() => Int)
+    page: number;
+
+    @Field(() => Int)
+    limit: number;
+}   
