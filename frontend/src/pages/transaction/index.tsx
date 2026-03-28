@@ -16,9 +16,8 @@ import { GET_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
 export default function Transaction() {
     const [open, setOpen] = useState(false)
 
-    const { data, loading: transactionsLoading } = useQuery<{ transactions: Transaction[] }>(GET_TRANSACTIONS);
-
-    console.log(data);
+    const { data: transactionsData } = useQuery<{ transactions: Transaction[] }>(GET_TRANSACTIONS);
+    void transactionsData;
 
     const handleOpenChange = (open: boolean) => {
         setOpen(open)

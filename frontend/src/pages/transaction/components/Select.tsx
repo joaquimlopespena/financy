@@ -12,7 +12,10 @@ interface SelectFormProps {
     /** Rótulo acessível (leitor de tela) */
     label: string;
     onValueChange?: (value: string) => void;
+    /** Modo controlado (ex.: formulário com estado React). */
+    value?: string;
     defaultValue?: string;
+    disabled?: boolean;
     /** Texto da opção “tudo” (Tipo: Todos, Categoria: Todas). Só aplica se `showAllOption` for true. */
     allLabel?: string;
     /** Se false, só lista `options` (ex.: Período sem “Todos”) */
@@ -26,17 +29,26 @@ export function SelectForm({
     options,
     label,
     onValueChange,
+    value,
     defaultValue = ALL_VALUE,
     allLabel = "Todos",
     showAllOption = true,
+    disabled = false,
     id,
 }: SelectFormProps) {
     const items = showAllOption
         ? [{ label: allLabel, value: ALL_VALUE }, ...options]
         : options;
 
+    const controlled = value !== undefined;
+
     return (
-        <Select defaultValue={defaultValue} onValueChange={onValueChange}>
+        <Select
+            disabled={disabled}
+            {...(controlled
+                ? { value, onValueChange }
+                : { defaultValue, onValueChange })}
+        >
             <SelectTrigger
                 id={id}
                 aria-label={label}

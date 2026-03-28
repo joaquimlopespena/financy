@@ -7,12 +7,18 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import { TransactionTypeSegment, type TransactionKind } from "./transaction-type-segment";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SelectForm } from "./Select";
-import { MOCK_CATEGORIES } from "@/lib/mock";
+import { useQuery } from "@apollo/client/react";
+import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
+import type { Category } from "@/types";
+import { useTransactionCreate } from "@/stores/transaction";
+import { formatCentsToBrlInput, parseCurrencyDigitsToCents } from "@/lib/format";
+import { DatePickerSimple } from "@/components/ui/date-picker-simple";
+import { toast } from "sonner";
 
 interface CreateIdeiaDialogProps {
     open: boolean;
@@ -20,8 +26,63 @@ interface CreateIdeiaDialogProps {
     onSuccess: () => void;
 }
 
+const SELECT_PLACEHOLDER = "all";
+
 export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess }: CreateIdeiaDialogProps) {
     const [kind, setKind] = useState<TransactionKind>("expense");
+    const [description, setDescription] = useState("");
+    const [amountCents, setAmountCents] = useState(0);
+    const [transactionDate, setTransactionDate] = useState<Date | undefined>();
+    const [categoryId, setCategoryId] = useState("");
+
+    const { submitCreate, loading } = useTransactionCreate({
+        onOpenChange: onOpenChange,
+        onSuccess: _onSuccess,
+    });
+
+    const { data: categoriesData, loading: categoriesLoading } = useQuery<{ categories: Category[] }>(
+        GET_CATEGORIES,
+        { skip: !open },
+    );
+
+    const categoryOptions = useMemo(
+        () =>
+            (categoriesData?.categories ?? []).map((c) => ({
+                value: c.id,
+                label: c.name,
+            })),
+        [categoriesData?.categories],
+    );
+
+    function handleSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        console.log(description, amountCents, transactionDate?.toISOString(), categoryId);
+        if (!description.trim() || amountCents <= 0 || !transactionDate || !categoryId) {
+            switch (true) {
+                case !description.trim():
+                    toast.error("Por favor, preencha a descrição");
+                    break;
+                case amountCents <= 0:
+                    toast.error("Por favor, preencha o valor");
+                    break;
+                case !transactionDate:
+                    toast.error("Por favor, selecione a data");
+                    break;
+                case !categoryId:
+                    toast.error("Por favor, selecione a categoria");
+                    break;
+            }
+            return;
+        }
+        void submitCreate({
+            title: description.trim(),
+            description: description.trim(),
+            amount: amountCents / 100,
+            type: kind === "income" ? "INCOME" : "EXPENSE",
+            transactionDate: transactionDate.toISOString(),
+            categoryId: categoryId,
+        });
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,9 +113,7 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
 
                 <form
                     className="flex flex-col gap-5 px-6 pb-6"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                    }}
+                    onSubmit={handleSubmit}
                 >
                     <TransactionTypeSegment value={kind} onValueChange={setKind} />
 
@@ -64,6 +123,8 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                         </Label>
                         <Input
                             id="tx-desc"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             placeholder="Ex. Almoço no restaurante"
                             className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm placeholder:text-gray-400"
                         />
@@ -74,27 +135,34 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                             <Label htmlFor="transaction-date" className="text-sm font-medium text-gray-800">
                                 Data
                             </Label>
-                            <Input
+                            <DatePickerSimple
                                 id="transaction-date"
-                                type="text"
-                                name="date"
+                                value={transactionDate}
+                                onChange={setTransactionDate}
                                 placeholder="Selecione"
-                                autoComplete="off"
-                                className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400"
                             />
                         </div>
                         <div className="min-w-0 space-y-2">
                             <Label htmlFor="transaction-value" className="text-sm font-medium text-gray-800">
                                 Valor
                             </Label>
-                            <Input
-                                id="transaction-value"
-                                type="text"
-                                name="amount"
-                                inputMode="decimal"
-                                defaultValue="R$ 0,00"
-                                className="h-12 rounded-lg border-gray-200 bg-white px-3 text-sm tabular-nums text-gray-900"
-                            />
+                            <div className="relative">
+                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-600">
+                                    R$
+                                </span>
+                                <Input
+                                    id="transaction-value"
+                                    type="text"
+                                    name="amount"
+                                    inputMode="numeric"
+                                    autoComplete="off"
+                                    placeholder="0,00"
+                                    value={formatCentsToBrlInput(amountCents)}
+                                    onChange={(e) => setAmountCents(parseCurrencyDigitsToCents(e.target.value))}
+                                    className="h-12 min-w-0 w-full rounded-lg border-gray-200 bg-white pl-11 pr-3 text-sm tabular-nums text-gray-900"
+                                    
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -105,11 +173,11 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                         <SelectForm
                             id="category"
                             label="Categoria"
-                            allLabel="Selecione"
-                            options={MOCK_CATEGORIES.map((category) => ({
-                                value: category.id,
-                                label: category.label,
-                            }))}
+                            allLabel={categoriesLoading ? "Carregando categorias…" : "Selecione"}
+                            disabled={categoriesLoading}
+                            value={categoryId === "" ? SELECT_PLACEHOLDER : categoryId}
+                            onValueChange={(v) => setCategoryId(v === SELECT_PLACEHOLDER ? "" : v)}
+                            options={categoryOptions}
                         />
                     </div>
 
@@ -117,7 +185,7 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                         type="submit"
                         className="h-11 w-full rounded-lg bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
                     >
-                        Salvar
+                        {loading ? "Salvando…" : "Salvar"}
                     </Button>
                 </form>
             </DialogContent>
