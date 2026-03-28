@@ -8,6 +8,7 @@ import { useState } from "react";
 import type { Category } from "@/types";
 import { CATEGORY_ICON_OPTIONS } from "./category-icon-picker";
 import { CategoryDeleteDialog } from "./category-delete-dialog";
+import { useCategoryDelete } from "@/stores/category";
 
 const toneIconBox: Record<CategoryTone, { box: string; icon: string }> = {
     blue: { box: "bg-blue-light", icon: "text-blue-base" },
@@ -43,12 +44,10 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
         CATEGORY_ICON_OPTIONS.find((o) => o.id === icon)?.Icon ?? Briefcase;
 
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const { submitDelete } = useCategoryDelete();
 
     const handleDelete = (categoryId: string) => {
-        console.log(categoryId);
-        // void submitDelete({
-        //     id: category.id,
-        // });
+        void submitDelete(categoryId);
     };
 
     return (

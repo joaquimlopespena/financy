@@ -1,4 +1,4 @@
-import { CREATE_CATEGORY } from "@/lib/graphql/mutations/category";
+import { CREATE_CATEGORY, DELETE_CATEGORY } from "@/lib/graphql/mutations/category";
 import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
 import { useAuthStore } from "@/stores/auth";
 import type { Category, CreateCategoryInput } from "@/types";
@@ -96,4 +96,27 @@ export function useCategoryCreate(options?: UseCategoryCreateOptions) {
     }
 
     return { submitCreate, loading };
+}
+
+export function useCategoryDelete() { 
+    const [deleteCategory, { loading }] = useMutation(DELETE_CATEGORY);
+
+    async function submitDelete(id: string) {
+        try {
+            const result = await deleteCategory({
+                variables: { id },
+            });
+            if (result.error) {
+                handleMutationFailure(result.error);
+                return;
+            }
+
+            
+            toast.success("Categoria excluída com sucesso");
+        } catch (error: unknown) {
+            handleMutationFailure(error);
+        }
+    }
+
+    return { submitDelete, loading };
 }
