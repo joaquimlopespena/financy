@@ -7,20 +7,30 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CategoryColorPicker } from "./category-color-picker";
 import { CategoryIconPicker } from "./category-icon-picker";
-import { useCategoryCreate } from "@/stores/category";
+import { useCategoryCreate, useCategoryUpdate } from "@/stores/category";
+import type { Category } from "@/types";
 
 interface CreateIdeiaDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSuccess: () => void;
+    onType?: "create" | "update";
+    /** Em modo `update`, passar a categoria a editar. */
+    category?: Category;
 }
 
-export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeiaDialogProps) {
+export function ModalFromCategory({
+    open,
+    onOpenChange,
+    onSuccess,
+    onType = "create",
+    category,
+}: CreateIdeiaDialogProps) {
     const [iconId, setIconId] = useState("briefcase");
     const [colorId, setColorId] = useState("green");
     const [title, setTitle] = useState("");
@@ -43,6 +53,11 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeia
         onSuccess,
     });
 
+    const { submitUpdate, loading: updateLoading } = useCategoryUpdate({
+        onOpenChange: handleOpenChange,
+        onSuccess,
+    });
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         void submitCreate({
@@ -52,6 +67,26 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeia
             color: colorId,
         });
     };
+
+    const handleSubmitUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!category?.id) return;
+        void submitUpdate(category.id, {
+            name: title.trim(),
+            description: description.trim() || undefined,
+            icon: iconId,
+            color: colorId,
+        });
+    };
+
+    useEffect(() => {
+        if (category) {
+            setTitle(category.name);
+            setDescription(category.description);
+            setIconId(category.icon);
+            setColorId(category.color);
+        }
+    }, [category, onType]);
 
     const handleClose = () => handleOpenChange(false);
 
@@ -64,10 +99,10 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeia
                 <DialogHeader className="flex flex-row items-start justify-between gap-4 space-y-0 p-6 pb-4">
                     <div className="min-w-0 flex-1 space-y-1">
                         <DialogTitle className="font-sans text-lg font-semibold leading-tight text-gray-900">
-                            Nova categoria
+                            {onType === "create" ? "Nova categoria" : "Editar categoria"}
                         </DialogTitle>
                         <DialogDescription className="text-sm font-normal text-gray-500">
-                            Organize suas transações por categorias
+                            {onType === "create" ? "Crie uma nova categoria" : "Edite a categoria"}
                         </DialogDescription>
                     </div>
                     <Button
@@ -82,7 +117,7 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeia
                     </Button>
                 </DialogHeader>
 
-                <form className="flex flex-col gap-6 px-6 pb-6" onSubmit={handleSubmit}>
+                <form className="flex flex-col gap-6 px-6 pb-6" onSubmit={onType === "create" ? handleSubmit : handleSubmitUpdate}>
                     <div className="space-y-2">
                         <Label htmlFor="category-name" className="text-sm font-medium text-gray-800">
                             Título
@@ -130,10 +165,20 @@ export function ModalFromCategory({ open, onOpenChange, onSuccess }: CreateIdeia
                     </div>
                     <Button
                         type="submit"
-                        disabled={loading || !title.trim()}
+                        disabled={
+                            !title.trim() ||
+                            (onType === "create" && loading) ||
+                            (onType === "update" && (updateLoading || !category?.id))
+                        }
                         className="h-11 w-full rounded-xl bg-brand-base text-base font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
                     >
-                        {loading ? "Salvando…" : "Salvar"}
+                        {onType === "create"
+                            ? loading
+                                ? "Salvando…"
+                                : "Salvar"
+                            : updateLoading
+                              ? "Salvando…"
+                              : "Salvar"}
                     </Button>
                 </form>
             </DialogContent>

@@ -1,7 +1,7 @@
-import { CREATE_CATEGORY, DELETE_CATEGORY } from "@/lib/graphql/mutations/category";
+import { CREATE_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY } from "@/lib/graphql/mutations/category";
 import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
 import { useAuthStore } from "@/stores/auth";
-import type { Category, CreateCategoryInput } from "@/types";
+import type { Category, CreateCategoryInput, UpdateCategoryInput } from "@/types";
 import { useMutation } from "@apollo/client/react";
 import { toast } from "sonner";
 
@@ -96,6 +96,49 @@ export function useCategoryCreate(options?: UseCategoryCreateOptions) {
     }
 
     return { submitCreate, loading };
+}
+
+export function useCategoryUpdate(options?: UseCategoryCreateOptions) {
+    const [updateCategory, { loading }] = useMutation(UPDATE_CATEGORY);
+
+    async function submitUpdate(id: string, input: UpdateCategoryInput) {
+        try {
+            const result = await updateCategory({
+                variables: { id, input },
+
+                update: (cache, { data: mutationData }) => {
+                    const updated = (mutationData as { updateCategory?: Category } | null | undefined)
+                        ?.updateCategory;
+                    if (!updated) return;
+                    const existing = cache.readQuery<{ categories: Category[] }>({ query: GET_CATEGORIES });
+                    if (!existing) return;
+                    cache.writeQuery({
+                        query: GET_CATEGORIES,
+                        data: {
+                            categories: existing.categories.map((c) =>
+                                c.id === id ? { ...c, ...updated } : c,
+                            ),
+                        },
+                    });
+                },
+            });
+            if (result.error) {
+                handleMutationFailure(result.error);
+                return;
+            }
+
+            const data = result.data as { updateCategory?: Category } | undefined;
+            if (data?.updateCategory) {
+                toast.success("Categoria atualizada com sucesso");
+                options?.onOpenChange?.(false);
+                options?.onSuccess?.();
+            }
+        } catch (error: unknown) {
+            handleMutationFailure(error);
+        }
+    }
+
+    return { submitUpdate, loading };
 }
 
 export function useCategoryDelete() { 

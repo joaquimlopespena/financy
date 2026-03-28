@@ -40,3 +40,10 @@ export interface CreateCategoryInput {
     icon?: string | null
     color?: string | null
 }
+
+export interface UpdateCategoryInput {
+    name?: string | null
+    description?: string | null
+    icon?: string | null
+    color?: string | null
+}

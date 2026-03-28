@@ -12,6 +12,8 @@ import type { Category } from "@/types";
 export default function Category() {
     const [open, setOpen] = useState(false);
     const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
+    const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
+    const [onType, setOnType] = useState<"create" | "update">("create");
 
     const { totalCategories, totalTransactions, topCategoryLabel } = useMemo(() => {
         const categories = data?.categories ?? [];
@@ -28,9 +30,26 @@ export default function Category() {
         };
     }, [data]);
 
+    /** Volta o fluxo para “nova categoria” (usado ao fechar ou após sucesso). */
+    const resetModalState = () => {
+        setCategoryToEdit(null);
+        setOnType("create");
+    };
+
+    const handleModalOpenChange = (next: boolean) => {
+        if (!next) resetModalState();
+        setOpen(next);
+    };
+
     const handleSuccess = () => {
-        setOpen(false);
-    }
+        resetModalState();
+    };
+
+    const handleEdit = (category: Category) => {
+        setOpen(true);
+        setCategoryToEdit(category);
+        setOnType("update");
+    };
 
     return (
         <div>
@@ -44,7 +63,14 @@ export default function Category() {
                             Organize suas transações por categorias
                         </CardDescription>
                     </div>
-                    <Button type="button" className="h-10 gap-2 px-4 font-medium" onClick={() => setOpen(true)}>
+                    <Button
+                        type="button"
+                        className="h-10 gap-2 px-4 font-medium"
+                        onClick={() => {
+                            resetModalState();
+                            setOpen(true);
+                        }}
+                    >
                         <Plus className="size-4" strokeWidth={2} aria-hidden />
                         Nova Categoria
                     </Button>
@@ -73,10 +99,16 @@ export default function Category() {
             </div>
             <div className="mt-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {(data?.categories ?? []).map((category) => (
-                    <CategoryGridCard key={category.id} category={category} />
+                    <CategoryGridCard key={category.id} category={category} onEdit={handleEdit} />
                 ))}
             </div>
-            <ModalFromCategory open={open} onOpenChange={setOpen} onSuccess={handleSuccess} />
+            <ModalFromCategory
+                open={open}
+                onOpenChange={handleModalOpenChange}
+                onSuccess={handleSuccess}
+                onType={onType}
+                category={categoryToEdit ?? undefined}
+            />
         </div>
     );
 }

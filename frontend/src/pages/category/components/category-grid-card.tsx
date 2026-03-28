@@ -34,9 +34,10 @@ const toneBadge: Record<CategoryTone, string> = {
 
 interface CategoryGridCardProps {
     category: Category;
+    onEdit: (category: Category) => void;
 }
 
-export function CategoryGridCard({ category }: CategoryGridCardProps) {
+export function CategoryGridCard({ category, onEdit }: CategoryGridCardProps) {
     const { name, description, icon, countTransactions } = category;
     const tone = category.color as keyof typeof toneIconBox;
     const styles = toneIconBox[tone];
@@ -89,6 +90,7 @@ export function CategoryGridCard({ category }: CategoryGridCardProps) {
                         size="icon-sm"
                         className="size-8 rounded-md border-gray-200 bg-white shadow-none"
                         aria-label={`Editar ${name}`}
+                        onClick={() => onEdit(category)}
                     >
                         <Pencil className="size-4 text-gray-700" strokeWidth={2} aria-hidden />
                     </Button>
