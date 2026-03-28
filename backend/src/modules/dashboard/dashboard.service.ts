@@ -33,7 +33,12 @@ export class DashboardService {
             if (transaction.type === TransactionType.INCOME) {
                 return acc + transaction.amount;
             }
-            return acc - transaction.amount;
+
+            if (transaction.type === TransactionType.EXPENSE) {
+                return acc - transaction.amount;
+            }
+
+            return acc;
         }, 0);
     }
 
@@ -52,13 +57,13 @@ export class DashboardService {
     }
 
     async getDashboardData(userId: string): Promise<DashboardModel> {
-        const transactions = await this.transactionService.findByUserId(userId, "desc", 10);
-        const categories = await this.categoryService.findByUserId(userId, 10);
-
+       
+        const categories = await this.categoryService.findByUserId(userId, 5);
         const { start, end } = currentMonthRangeUtc();
-        const total_balance = this.calculateTotalBalance(transactions);
-        const total_income = this.sumAmountInMonth(transactions, TransactionType.INCOME, start, end);
-        const total_expenses = this.sumAmountInMonth(transactions, TransactionType.EXPENSE, start, end);
+        const total_balance = await this.transactionService.sumAmountByUserId(userId, TransactionType.INCOME) - await this.transactionService.sumAmountByUserId(userId, TransactionType.EXPENSE);
+        const total_income = await this.transactionService.sumAmountByUserId(userId, TransactionType.INCOME);
+        const total_expenses = await this.transactionService.sumAmountByUserId(userId, TransactionType.EXPENSE);
+        const transactions = await this.transactionService.findByUserId(userId, "desc", 5);
 
         return {
             total_balance,

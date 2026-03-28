@@ -1,4 +1,5 @@
 import { prisma } from '../../config/prisma';
+import { TransactionType } from '../../generated/prisma/enums';
 import { PaginatedTransactionModel, TransactionModel } from "../../models/transaction.model";
 import { CreateTransactionInput } from "./dto/create-transaction.input";
 import { UpdateTransactionInput } from "./dto/update-transaction.input";
@@ -20,7 +21,7 @@ export class TransactionService {
                 category: { connect: { id: input.categoryId } },
             },
         });
-        
+
         return transaction as unknown as TransactionModel;
     }
 
@@ -115,7 +116,7 @@ export class TransactionService {
             transactions: rows as unknown as TransactionModel[],
             total,
             page: safePage,
-            limit: safeLimit,   
+            limit: safeLimit,
         };
     }
 
@@ -125,5 +126,20 @@ export class TransactionService {
             _sum: { amount: true },
         });
         return sum._sum.amount ?? 0;
+    }
+
+    async sumAmountByUserId(userId: string, type: TransactionType): Promise<number> {
+        const sum = await prisma.transaction.aggregate({
+            where: { userId, type: type as TransactionType },
+            _sum: { amount: true },
+        });
+        return sum._sum.amount ?? 0;
+    }
+
+    async countByUserId(userId: string): Promise<number> {
+        const count = await prisma.transaction.count({
+            where: { userId },
+        });
+        return count;
     }
 }
