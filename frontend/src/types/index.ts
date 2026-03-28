@@ -26,7 +26,8 @@ export interface Category {
     description: string;
     createdAt: string;
     updatedAt: string;
-    countTransactions: number;
+    countTransactions?: number | null;
+    totalAmount?: number | null;
     user: {
         id: string;
         name: string;

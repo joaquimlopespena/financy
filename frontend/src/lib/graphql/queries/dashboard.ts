@@ -11,6 +11,7 @@ export const GET_DASHBOARD = gql`
                 name
                 color
                 countTransactions
+                totalAmount
             }
             transactions {
                 id

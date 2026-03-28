@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatBrl } from "@/lib/format";
 import type { CategoryTone } from "@/lib/mock";
-import type { Transaction } from "@/types";
+import type { Category, Transaction } from "@/types";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
@@ -24,19 +24,8 @@ function toCategoryTone(color: string | null | undefined): CategoryTone {
     return c in categoryBadgeClass ? (c as CategoryTone) : "green";
 }
 
-/** Soma despesas por categoria (para o total exibido no card). */
-function expenseTotalsByCategoryId(transactions: Transaction[]): Map<string, number> {
-    const map = new Map<string, number>();
-    for (const tx of transactions) {
-        if (tx.type.toUpperCase() !== "EXPENSE") continue;
-        const id = tx.category.id;
-        map.set(id, (map.get(id) ?? 0) + tx.amount);
-    }
-    return map;
-}
-
 interface CategoriesCardProps {
-    categories: DashboardCategory[];
+    categories: Category[];
 }
 
 export function CategoriesCard({ categories }: CategoriesCardProps) {
@@ -46,7 +35,7 @@ export function CategoriesCard({ categories }: CategoriesCardProps) {
             label: cat.name,
             tone: toCategoryTone(cat.color),
             itemCount: cat.countTransactions,
-            total: 0,
+            total: cat.totalAmount,
         }));
     }, [categories]);
 
@@ -84,7 +73,7 @@ export function CategoriesCard({ categories }: CategoriesCardProps) {
                             {cat.itemCount} {cat.itemCount === 1 ? "item" : "itens"}
                         </span>
                         <span className="shrink-0 text-sm font-bold tabular-nums text-gray-900">
-                            {formatBrl(cat.total)}
+                            {formatBrl(cat.total ?? 0)}
                         </span>
                     </div>
                 ))}

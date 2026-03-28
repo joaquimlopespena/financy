@@ -21,12 +21,12 @@ export default function Category() {
         const top =
             categories.length > 0
                 ? categories.reduce((a, b) =>
-                      a.countTransactions >= b.countTransactions ? a : b,
+                      (a.countTransactions ?? 0) >= (b.countTransactions ?? 0) ? a : b,
                   )
                 : undefined;
         return {
             totalCategories: categories.length,
-            totalTransactions: categories.reduce((sum, cat) => sum + cat.countTransactions, 0),
+            totalTransactions: categories.reduce((sum, cat) => sum + (cat.countTransactions ?? 0), 0),
             topCategoryLabel: top?.name,
         };
     }, [data]);

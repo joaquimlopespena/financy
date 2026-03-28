@@ -1,4 +1,4 @@
-import { Arg, Field, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, Field, FieldResolver, Float, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { CategoryModel } from "../../models/category.model";
 import { CreateCategoryInput } from "./dto/create-category.input";
 import { CategoryService } from "./category.service";
@@ -93,5 +93,12 @@ export class CategoryResolver {
         const row = await this.categoryService.findById(category.id, category.userId);
         if (!row) throw new Error('Category not found');
         return await this.transactionService.countByCategoryId(row.id, category.userId);
+    }
+
+    @FieldResolver(() => CategoryModel)
+    async totalAmount(@Root() category: CategoryModel): Promise<number> {
+        const row = await this.categoryService.findById(category.id, category.userId);
+        if (!row) throw new Error('Category not found');
+        return await this.transactionService.sumAmountByCategoryId(row.id, category.userId);
     }
 }

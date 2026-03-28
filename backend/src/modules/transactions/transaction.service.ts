@@ -24,11 +24,11 @@ export class TransactionService {
         return transaction as unknown as TransactionModel;
     }
 
-    async findByUserId(userId: string, orderBy: string = "desc", safeLimit: number|null = null): Promise<TransactionModel[]> {
+    async findByUserId(userId: string, orderBy: string = "desc", safeLimit: number | null = null): Promise<TransactionModel[]> {
         const transactions = await prisma.transaction.findMany({
             where: { userId },
             orderBy: { transactionDate: "desc" },
-            take: safeLimit,
+            ...(safeLimit != null && safeLimit > 0 ? { take: safeLimit } : {}),
         });
         return transactions as unknown as TransactionModel[];
     }
@@ -117,5 +117,13 @@ export class TransactionService {
             page: safePage,
             limit: safeLimit,   
         };
+    }
+
+    async sumAmountByCategoryId(categoryId: string, userId: string): Promise<number> {
+        const sum = await prisma.transaction.aggregate({
+            where: { categoryId, userId },
+            _sum: { amount: true },
+        });
+        return sum._sum.amount ?? 0;
     }
 }
