@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CategoryGridCard } from "./components/category-grid-card";
-import { ArrowUpDown, Plus, Tag, Utensils } from "lucide-react";
+import { CategoryGridCardSkeleton } from "./components/category-grid-card-skeleton";
+import { ArrowUpDown, Loader2, Plus, Tag, Utensils } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CategoryStatCard } from "./components/category-stat-card";
 import { ModalFromCategory } from "./components/modal-from-category";
@@ -11,7 +12,7 @@ import type { Category } from "@/types";
 
 export default function Category() {
     const [open, setOpen] = useState(false);
-    const { data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
+    const { data, loading: categoriesLoading } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
     const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
     const [onType, setOnType] = useState<"create" | "update">("create");
 
@@ -80,27 +81,45 @@ export default function Category() {
             <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-3">
                 <CategoryStatCard
                     icon={Tag}
-                    value={String(totalCategories)}
+                    value={categoriesLoading ? "—" : String(totalCategories)}
                     label="Total de categorias"
                     iconClassName="text-gray-900"
                 />
                 <CategoryStatCard
                     icon={ArrowUpDown}
-                    value={String(totalTransactions)}
+                    value={categoriesLoading ? "—" : String(totalTransactions)}
                     label="Total de transações"
                     iconClassName="text-purple-base"
                 />
                 <CategoryStatCard
                     icon={Utensils}
-                    value={topCategoryLabel ?? "Nenhuma categoria encontrada"}
+                    value={
+                        categoriesLoading
+                            ? "—"
+                            : (topCategoryLabel ?? "Nenhuma categoria encontrada")
+                    }
                     label="Categoria mais utilizada"
                     iconClassName="text-blue-base"
                 />
             </div>
-            <div className="mt-6 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {(data?.categories ?? []).map((category) => (
-                    <CategoryGridCard key={category.id} category={category} onEdit={handleEdit} />
-                ))}
+            <div className="mt-6 space-y-4">
+                {categoriesLoading ? (
+                    <p className="flex items-center gap-2 text-sm text-gray-600" role="status" aria-live="polite">
+                        <Loader2 className="size-4 shrink-0 animate-spin text-brand-base" aria-hidden />
+                        Carregando categorias…
+                    </p>
+                ) : null}
+                <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {categoriesLoading
+                        ? Array.from({ length: 8 }, (_, i) => <CategoryGridCardSkeleton key={i} />)
+                        : (data?.categories ?? []).map((category) => (
+                              <CategoryGridCard
+                                  key={category.id}
+                                  category={category}
+                                  onEdit={handleEdit}
+                              />
+                          ))}
+                </div>
             </div>
             <ModalFromCategory
                 open={open}
