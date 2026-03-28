@@ -1,15 +1,43 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, Lock, LogIn, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, LogIn, Mail, Loader2, User } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { cn } from "../../lib/utils";
 import logo from "../../assets/logo.svg";
+import { useAuthStore } from "../../stores/auth";
+import { toast } from "sonner";
 
 export default function Registrar() {
     const [showPassword, setShowPassword] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false)
+
+    const register = useAuthStore((state) => state.register);
+    
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const result = await register({ name, email, password });
+
+
+            if (result) {
+                toast.success('Usuário registrado com sucesso');
+            } else {
+                toast.error('Erro ao registrar usuário');
+            }
+        } catch (error: any) {
+            toast.error("Erro ao realizar o cadastro")
+        } finally {
+            setLoading(false)
+        }
+    }
     
     return (
         <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 px-4 py-10">
@@ -31,7 +59,7 @@ export default function Registrar() {
                 </CardHeader>
 
                 <CardContent className="space-y-6 pb-10 pt-6 px-3 sm:px-10">
-                    <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-sm font-bold text-gray-800">
                                 Nome completo
@@ -43,9 +71,12 @@ export default function Registrar() {
                                 <Input
                                     id="name"
                                     type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     autoComplete="name"
                                     placeholder="Seu nome completo"
                                     className="h-10 rounded-lg border-gray-200 bg-white pl-10 pr-3 text-base placeholder:text-gray-400 md:text-base"
+                                    required
                                 />
                             </div>
                         </div>
@@ -61,9 +92,12 @@ export default function Registrar() {
                                 <Input
                                     id="email"
                                     type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     autoComplete="email"
                                     placeholder="mail@exemplo.com"
                                     className="h-10 rounded-lg border-gray-200 bg-white pl-10 pr-3 text-base placeholder:text-gray-400 md:text-base"
+                                    required
                                 />
                             </div>
                         </div>
@@ -80,9 +114,12 @@ export default function Registrar() {
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     autoComplete="new-password"
                                     placeholder="Digite sua senha"
                                     className="h-10 rounded-lg border-gray-200 bg-white pl-10 pr-11 text-base placeholder:text-gray-400 md:text-base"
+                                    required
                                 />
                                 <button
                                     type="button"
@@ -102,8 +139,8 @@ export default function Registrar() {
                             </p>
                         </div>
 
-                        <Button type="submit" className="h-10 w-full text-base font-bold">
-                            Cadastrar
+                        <Button type="submit" className="h-10 w-full text-base font-bold" disabled={loading}>
+                            {loading ? <Loader2 className="size-4 animate-spin" /> : 'Cadastrar'}
                         </Button>
                     </form>
 
