@@ -10,8 +10,8 @@ export class TransactionModel {
     @Field(() => String)
     title: string;
 
-    @Field(() => String)
-    description: string;
+    @Field(() => String, { nullable: true })
+    description?: string | null;
     
     @Field(() => Float)
     amount: number;

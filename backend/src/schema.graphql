@@ -94,7 +94,7 @@ type TransactionModel {
   category: CategoryModel!
   categoryId: String!
   createdAt: DateTimeISO!
-  description: String!
+  description: String
   id: String!
   title: String!
   transactionDate: DateTimeISO!
