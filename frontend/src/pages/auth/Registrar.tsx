@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff, Lock, LogIn, Mail, User } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
@@ -113,13 +114,11 @@ export default function Registrar() {
                     </div>
                     <div className="space-y-3 text-center">
                         <p className="text-sm text-gray-600">Já tem uma conta?</p>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="h-10 w-full gap-2 border-gray-200 bg-white text-base font-medium text-gray-800 hover:bg-gray-50"
-                        >
-                            <LogIn className="size-4" />
-                            Fazer login
+                        <Button variant="outline" className="h-10 w-full gap-2 border-gray-200 bg-white text-base font-medium text-gray-800 hover:bg-gray-50" asChild>
+                            <Link to="/login">
+                                <LogIn className="size-4" />
+                                Fazer login
+                            </Link>
                         </Button>
                     </div>
                 </CardContent>

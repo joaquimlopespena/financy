@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail, UserPlus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
@@ -11,7 +12,7 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 px-4 py-10">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-gray-100 px-4 py-10">
             <img src={logo} alt="Financy" className="h-auto w-44" />
 
             <Card
@@ -112,13 +113,11 @@ export default function Login() {
                         <p className="text-sm font-normal text-gray-600">Ainda não tem uma conta? </p>
                     </div>
 
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="h-10 py-3 w-full gap-2 border-gray-200 bg-white text-base font-medium text-gray-800 hover:bg-gray-50"
-                    >
-                        <UserPlus className="size-4" />
-                        Criar conta
+                    <Button variant="outline" className="h-10 w-full gap-2 border-gray-200 bg-white py-3 text-base font-medium text-gray-800 hover:bg-gray-50" asChild>
+                        <Link to="/registrar">
+                            <UserPlus className="size-4" />
+                            Criar conta
+                        </Link>
                     </Button>
                 </CardContent>
             </Card>
