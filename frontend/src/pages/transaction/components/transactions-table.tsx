@@ -76,9 +76,17 @@ interface TransactionsTableProps {
     page: number;
     pageSize: number;
     onPageChange: (page: number) => void;
+    onDeleteTransaction?: (transaction: Transaction) => void;
 }
 
-export function TransactionsTable({ transactions, total, page, pageSize, onPageChange }: TransactionsTableProps) {
+export function TransactionsTable({
+    transactions,
+    total,
+    page,
+    pageSize,
+    onPageChange,
+    onDeleteTransaction,
+}: TransactionsTableProps) {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
     const end = total === 0 ? 0 : Math.min(page * pageSize, total);
@@ -193,6 +201,7 @@ export function TransactionsTable({ transactions, total, page, pageSize, onPageC
                                                 size="icon-sm"
                                                 className="shrink-0 border-gray-200 text-red-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
                                                 aria-label="Excluir transação"
+                                                onClick={() => onDeleteTransaction?.(tx)}
                                             >
                                                 <Trash2 className="size-4" strokeWidth={2} />
                                             </Button>

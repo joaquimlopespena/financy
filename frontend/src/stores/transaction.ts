@@ -150,7 +150,7 @@ export function useTransactionUpdate(options?: UseTransactionMutationOptions) {
 export function useTransactionDelete() {
     const [deleteTransaction, { loading }] = useMutation(DELETE_TRANSACTION);
 
-    async function submitDelete(id: string) {
+    async function submitDelete(id: string): Promise<boolean> {
         try {
             const result = await deleteTransaction({
                 variables: { id },
@@ -169,15 +169,18 @@ export function useTransactionDelete() {
             });
             if (result.error) {
                 handleMutationFailure(result.error, "Erro ao excluir transação");
-                return;
+                return false;
             }
 
             const data = result.data as { deleteTransaction?: boolean } | undefined;
             if (data?.deleteTransaction) {
                 toast.success("Transação excluída com sucesso");
+                return true;
             }
+            return false;
         } catch (error: unknown) {
             handleMutationFailure(error, "Erro ao excluir transação");
+            return false;
         }
     }
 
