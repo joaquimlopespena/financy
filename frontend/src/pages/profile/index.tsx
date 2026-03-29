@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/stores/auth";
 import { LogOut, Mail, User } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 const PROFILE = {
     initials: "CT",
@@ -13,6 +14,22 @@ const PROFILE = {
 
 export default function Profile() {
     const logout = useAuthStore((state) => state.logout);
+    const user = useAuthStore((state) => state.user);
+    const [name, setName] = useState(user?.name);
+
+    console.log("user", user);
+
+    function initialsFromName(name: string | null | undefined): string {
+        const trimmed = name?.trim();
+        if (!trimmed) return "?";
+        const parts = trimmed.split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+            const first = parts[0]?.charAt(0) ?? "";
+            const last = parts[parts.length - 1]?.charAt(0) ?? "";
+            return (first + last).toUpperCase();
+        }
+        return trimmed.slice(0, 2).toUpperCase();
+    }
 
     const handleLogout = async () => {
         await logout();
@@ -26,11 +43,11 @@ export default function Profile() {
                         className="mx-auto flex size-20 shrink-0 items-center justify-center rounded-full bg-gray-200 text-lg font-semibold tracking-tight text-gray-600"
                         aria-hidden
                     >
-                        {PROFILE.initials}
+                        {initialsFromName(user?.name)}
                     </div>
                     <div className="space-y-1">
-                        <h1 className="font-sans text-lg font-bold text-gray-900">{PROFILE.name}</h1>
-                        <p className="text-sm text-gray-500">{PROFILE.email}</p>
+                        <h1 className="font-sans text-lg font-bold text-gray-900">{user?.name}</h1>
+                        <p className="text-sm text-gray-500">{user?.email}</p>
                     </div>
                 </CardHeader>
 
@@ -56,7 +73,8 @@ export default function Profile() {
                                     name="name"
                                     type="text"
                                     autoComplete="name"
-                                    defaultValue={PROFILE.name}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     className="h-11 rounded-lg border border-gray-200 bg-white pl-10 pr-3 text-base text-gray-900 shadow-none placeholder:text-gray-400"
                                 />
                             </div>
