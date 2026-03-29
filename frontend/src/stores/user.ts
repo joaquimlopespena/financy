@@ -60,6 +60,7 @@ export function useUserUpdate() {
                     const updated = (mutationData as { updateUser?: User } | null | undefined)?.updateUser;
                     if (!updated) return;
                     applyUpdatedUserToSession(updated);
+                    localStorage.removeItem('token');
                 },
             });
             

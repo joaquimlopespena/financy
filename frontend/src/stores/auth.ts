@@ -81,6 +81,7 @@ export const useAuthStore = create<AuthState>()(
                     isAuthenticated: false,
                 })
                 localStorage.removeItem('auth');
+                localStorage.removeItem('token');
             },
             setIsLoading: (isLoading) => set({ isLoading }),
             register: async (registerInput: RegisterInput) => {
