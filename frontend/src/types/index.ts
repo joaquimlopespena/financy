@@ -79,6 +79,10 @@ export interface UpdateTransactionInput {
     categoryId?: string | null;
 }
 
+export interface UpdateUserInput {
+    name?: string | null;
+}
+
 export interface Dashboard {
     total_balance: number;
     total_income: number;

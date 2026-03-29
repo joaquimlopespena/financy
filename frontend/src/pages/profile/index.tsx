@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/stores/auth";
-import { LogOut, Mail, User } from "lucide-react";
+import { useUserUpdate } from "@/stores/user";
+import { Loader2, LogOut, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 const PROFILE = {
@@ -16,6 +17,8 @@ export default function Profile() {
     const logout = useAuthStore((state) => state.logout);
     const user = useAuthStore((state) => state.user);
     const [name, setName] = useState(user?.name);
+    const [isLoading, setIsLoading] = useState(false);
+    const { submitUpdate, loading } = useUserUpdate();
 
     console.log("user", user);
 
@@ -29,6 +32,28 @@ export default function Profile() {
             return (first + last).toUpperCase();
         }
         return trimmed.slice(0, 2).toUpperCase();
+    }
+
+    async function handleSubmitUpdate(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        try {
+            if (!name) {
+                toast.error("Nome é obrigatório");
+                return;
+            }
+            setIsLoading(true);
+            const result = await submitUpdate({ name: name });
+            if (result) {
+                toast.success("Usuário atualizado com sucesso");
+                setName(name);
+            } else {
+                toast.error("Erro ao atualizar usuário");
+            }
+        } catch (error) {
+            toast.error("Erro ao atualizar usuário");
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const handleLogout = async () => {
@@ -54,9 +79,7 @@ export default function Profile() {
                 <CardContent className="space-y-6 px-8 pb-10 pt-8 sm:px-10">
                     <form
                         className="space-y-5"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                        }}
+                        onSubmit={handleSubmitUpdate}
                     >
                         <div className="space-y-2">
                             <Label htmlFor="profile-name" className="text-sm font-medium text-gray-800">
@@ -95,7 +118,7 @@ export default function Profile() {
                                     name="email"
                                     type="email"
                                     readOnly
-                                    defaultValue={PROFILE.email}
+                                    defaultValue={user?.email}
                                     aria-readonly="true"
                                     className="h-11 cursor-not-allowed rounded-lg border border-gray-200 bg-gray-50 pl-10 pr-3 text-base text-gray-500 shadow-none"
                                 />
@@ -106,8 +129,10 @@ export default function Profile() {
                         <Button
                             type="submit"
                             className="h-11 w-full rounded-lg bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
+                            disabled={isLoading}
                         >
-                            Salvar alterações
+                            {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Salvar alterações"}
+                            
                         </Button>
                     </form>
 

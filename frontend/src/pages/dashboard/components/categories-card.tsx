@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatBrl } from "@/lib/format";
 import type { CategoryTone } from "@/lib/mock";
-import type { Category, Transaction } from "@/types";
+import type { Category } from "@/types";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
@@ -58,21 +58,23 @@ export function CategoriesCard({ categories }: CategoriesCardProps) {
                 {rows.map((cat) => (
                     <div
                         key={cat.id}
-                        className="flex items-center justify-between gap-3 px-4 py-4 sm:px-6"
+                        className="grid grid-cols-[minmax(0,1fr)_5.5rem_7.5rem] items-center gap-x-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_6.5rem_8.5rem] sm:gap-x-4 sm:px-6"
                     >
-                        <Badge
-                            variant="secondary"
-                            className={cn(
-                                "max-w-[min(100%,11rem)] truncate px-2.5 py-1 text-xs font-medium",
-                                categoryBadgeClass[cat.tone],
-                            )}
-                        >
-                            {cat.label}
-                        </Badge>
-                        <span className="shrink-0 text-sm text-gray-500">
+                        <div className="min-w-0">
+                            <Badge
+                                variant="secondary"
+                                className={cn(
+                                    "inline-flex min-w-0 max-w-full shrink truncate px-2.5 py-1 text-xs font-medium",
+                                    categoryBadgeClass[cat.tone],
+                                )}
+                            >
+                                {cat.label}
+                            </Badge>
+                        </div>
+                        <span className="text-center text-sm tabular-nums text-gray-500">
                             {cat.itemCount} {cat.itemCount === 1 ? "item" : "itens"}
                         </span>
-                        <span className="shrink-0 text-sm font-bold tabular-nums text-gray-900">
+                        <span className="text-right text-sm font-bold tabular-nums text-gray-900">
                             {formatBrl(cat.total ?? 0)}
                         </span>
                     </div>
