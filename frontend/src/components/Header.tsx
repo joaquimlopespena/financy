@@ -12,6 +12,7 @@ import {
     DrawerTrigger,
 } from "./ui/drawer";
 import { cn } from "../lib/utils";
+import { useAuthStore } from "@/stores/auth";
 
 const navItems = [
     { label: "Dashboard", to: "/dashboard" },
@@ -31,7 +32,21 @@ const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
         isActive ? "bg-gray-100 text-brand-base" : "text-gray-700 hover:bg-gray-50",
     );
 
+/** Duas letras: primeiro + último nome, ou as duas primeiras letras de um único nome (ex.: João → JO). */
+function initialsFromName(name: string | null | undefined): string {
+    const trimmed = name?.trim();
+    if (!trimmed) return "?";
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+        const first = parts[0]?.charAt(0) ?? "";
+        const last = parts[parts.length - 1]?.charAt(0) ?? "";
+        return (first + last).toUpperCase();
+    }
+    return trimmed.slice(0, 2).toUpperCase();
+}
+
 export function Header() {
+    const userName = useAuthStore((state) => (state.user !== null ? state.user.name : null));
     const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
@@ -96,10 +111,10 @@ export function Header() {
 
                     <Link
                         to="/perfil"
-                        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-800 sm:size-10 sm:text-sm"
+                        className="flex size-9 min-w-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-[10px] font-semibold tracking-tight text-gray-800 sm:size-10 sm:min-w-10 sm:text-xs"
                         aria-label="Perfil do usuário"
                     >
-                        CT
+                        {initialsFromName(userName)}
                     </Link>
                 </div>
             </div>
