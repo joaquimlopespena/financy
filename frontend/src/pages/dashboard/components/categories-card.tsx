@@ -7,6 +7,7 @@ import type { Category } from "@/types";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 
 const categoryBadgeClass: Record<CategoryTone, string> = {
     blue: "border-0 bg-blue-light text-blue-dark hover:bg-blue-light",
@@ -50,8 +51,10 @@ export function CategoriesCard({ categories }: CategoriesCardProps) {
                     size="sm"
                     className="h-auto shrink-0 gap-1 px-2 font-semibold text-brand-base hover:bg-transparent hover:text-brand-dark"
                 >
-                    Gerenciar
-                    <ChevronRight className="size-4" strokeWidth={2} aria-hidden />
+                    <Link to="/categorias" className="flex items-center gap-1">
+                        Gerenciar
+                        <ChevronRight className="size-4" strokeWidth={2} aria-hidden />
+                    </Link>
                 </Button>
             </CardHeader>
             <CardContent className="divide-y divide-gray-200 p-0">

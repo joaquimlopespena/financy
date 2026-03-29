@@ -16,6 +16,7 @@ import { CATEGORY_ICON_OPTIONS } from "@/pages/category/components/category-icon
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const ROW_TONES = ["green", "blue", "purple", "orange", "mint"] as const;
 type RowTone = (typeof ROW_TONES)[number];
@@ -75,8 +76,10 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsCardP
                     size="sm"
                     className="h-auto shrink-0 gap-1 px-2 font-semibold text-brand-base hover:bg-transparent hover:text-brand-dark"
                 >
-                    Ver todas
-                    <ChevronRight className="size-4" strokeWidth={2} aria-hidden />
+                    <Link to="/transacoes" className="flex items-center gap-1">
+                        Ver todas
+                        <ChevronRight className="size-4" strokeWidth={2} aria-hidden />
+                    </Link>
                 </Button>
             </CardHeader>
 
