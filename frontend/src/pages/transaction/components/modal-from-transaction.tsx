@@ -7,15 +7,15 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { TransactionTypeSegment, type TransactionKind } from "./transaction-type-segment";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SelectForm } from "./Select";
 import { useQuery } from "@apollo/client/react";
 import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
-import type { Category } from "@/types";
-import { useTransactionCreate } from "@/stores/transaction";
+import type { Category, Transaction } from "@/types";
+import { useTransactionCreate, useTransactionUpdate } from "@/stores/transaction";
 import { formatCentsToBrlInput, parseCurrencyDigitsToCents } from "@/lib/format";
 import { DatePickerSimple } from "@/components/ui/date-picker-simple";
 import { toast } from "sonner";
@@ -24,11 +24,20 @@ interface CreateIdeiaDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSuccess: () => void;
+    onType?: "create" | "update";
+    /** Em modo `update`, passar a transação a editar. */
+    transaction?: Transaction;
 }
 
 const SELECT_PLACEHOLDER = "all";
 
-export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess }: CreateIdeiaDialogProps) {
+export function ModalFromTransaction({
+    open,
+    onOpenChange,
+    onSuccess: _onSuccess,
+    onType = "create",
+    transaction,
+}: CreateIdeiaDialogProps) {
     const [kind, setKind] = useState<TransactionKind>("expense");
     const [description, setDescription] = useState("");
     const [amountCents, setAmountCents] = useState(0);
@@ -36,6 +45,11 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
     const [categoryId, setCategoryId] = useState("");
 
     const { submitCreate, loading } = useTransactionCreate({
+        onOpenChange: onOpenChange,
+        onSuccess: _onSuccess,
+    });
+
+    const { submitUpdate, loading: updateLoading } = useTransactionUpdate({
         onOpenChange: onOpenChange,
         onSuccess: _onSuccess,
     });
@@ -53,6 +67,24 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
             })),
         [categoriesData?.categories],
     );
+
+    useEffect(() => {
+        if (!open) return;
+        if (!transaction) {
+            setKind("expense");
+            setDescription("");
+            setAmountCents(0);
+            setTransactionDate(undefined);
+            setCategoryId("");
+            return;
+        }
+        const income = transaction.type?.toUpperCase() === "INCOME";
+        setKind(income ? "income" : "expense");
+        setDescription(transaction.title ?? transaction.description ?? "");
+        setAmountCents(Math.round(Number(transaction.amount) * 100));
+        setTransactionDate(transaction.transactionDate ? new Date(transaction.transactionDate) : undefined);
+        setCategoryId(transaction.category.id ?? "");
+    }, [open, transaction]);
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -84,6 +116,37 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
         });
     }
 
+    const handleSubmitUpdate = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(description, amountCents, transactionDate?.toISOString(), categoryId);
+        if (!description.trim() || amountCents <= 0 || !transactionDate || !categoryId) {
+            switch (true) {
+                case !description.trim():
+                    toast.error("Por favor, preencha a descrição");
+                    break;
+                case amountCents <= 0:
+                    toast.error("Por favor, preencha o valor");
+                    break;
+                case !transactionDate:
+                    toast.error("Por favor, selecione a data");
+                    break;
+                case !categoryId:
+                    toast.error("Por favor, selecione a categoria");
+                    break;
+            }
+            return;
+        }
+        
+        void submitUpdate(transaction?.id ?? "", {
+            title: description.trim(),
+            description: description.trim(),
+            amount: amountCents / 100,
+            type: kind === "income" ? "INCOME" : "EXPENSE",
+            transactionDate: transactionDate.toISOString(),
+            categoryId,
+        });
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
@@ -93,10 +156,10 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
                 <DialogHeader className="flex flex-row items-start justify-between gap-4 space-y-0 p-6 pb-4">
                     <div className="min-w-0 flex-1 space-y-1">
                         <DialogTitle className="font-sans text-lg font-semibold leading-tight text-gray-900">
-                            Nova transação
+                            {onType === "create" ? "Nova transação" : "Editar transação"}
                         </DialogTitle>
                         <DialogDescription className="text-sm font-normal text-gray-500">
-                            Registre sua despesa ou receita
+                            {onType === "create" ? "Registre sua despesa ou receita" : "Edite sua transação"}
                         </DialogDescription>
                     </div>
                     <Button
@@ -113,7 +176,7 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
 
                 <form
                     className="flex flex-col gap-5 px-6 pb-6"
-                    onSubmit={handleSubmit}
+                    onSubmit={onType === "create" ? handleSubmit : handleSubmitUpdate}
                 >
                     <TransactionTypeSegment value={kind} onValueChange={setKind} />
 
@@ -183,9 +246,10 @@ export function ModalFromTransaction({ open, onOpenChange, onSuccess: _onSuccess
 
                     <Button
                         type="submit"
+                        disabled={onType === "create" ? loading : updateLoading}
                         className="h-11 w-full rounded-lg bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
                     >
-                        {loading ? "Salvando…" : "Salvar"}
+                        {(onType === "create" ? loading : updateLoading) ? "Salvando…" : "Salvar"}
                     </Button>
                 </form>
             </DialogContent>

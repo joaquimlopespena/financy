@@ -7,9 +7,7 @@ import { SelectForm } from "./components/Select";
 import { MonthYearPicker } from "./components/month-year-picker";
 import { GET_CATEGORIES } from "@/lib/graphql/queries/category";
 import { TransactionsTable } from "./components/transactions-table";
-import { TransactionDeleteDialog } from "./components/transaction-delete-dialog";
 import { ModalFromTransaction } from "./components/modal-from-transaction";
-import { useTransactionDelete } from "@/stores/transaction";
 import { useEffect, useMemo, useState } from "react";
 import type { Transaction } from "@/types";
 import { format, startOfMonth } from "date-fns";
@@ -44,8 +42,7 @@ function toGqlTransactionType(kind: TransactionKind | null): "INCOME" | "EXPENSE
 /** Conteúdo centralizado pelo `Layout`; div raiz sem classe extra. */
 export default function Transaction() {
     const [createOpen, setCreateOpen] = useState(false);
-    const [deleteOpen, setDeleteOpen] = useState(false);
-    const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string } | null>(null);
+    const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [type, setType] = useState<TransactionKind | null>(null);
@@ -86,8 +83,6 @@ export default function Transaction() {
         notifyOnNetworkStatusChange: true,
     });
 
-    const { submitDelete, loading: deleteLoading } = useTransactionDelete();
-
     useEffect(() => {
         setPage(1);
     }, [periodKey, debouncedSearch, type, categoryId]);
@@ -115,6 +110,17 @@ export default function Transaction() {
 
     const handleCreateOpenChange = (next: boolean) => {
         setCreateOpen(next);
+        if (!next) setTransactionToEdit(null);
+    };
+
+    const openCreateModal = () => {
+        setTransactionToEdit(null);
+        setCreateOpen(true);
+    };
+
+    const handleEditTransaction = (tx: Transaction) => {
+        setTransactionToEdit(tx);
+        setCreateOpen(true);
     };
 
     const handleSuccess = () => {
@@ -123,22 +129,7 @@ export default function Transaction() {
         void refetch({ filter: { ...paginateFilterFields, page: 1 } });
     };
 
-    const handleDeleteOpenChange = (next: boolean) => {
-        setDeleteOpen(next);
-        if (!next) setPendingDelete(null);
-    };
-
-    const openDeleteDialog = (tx: Transaction) => {
-        setPendingDelete({ id: tx.id, title: tx.title });
-        setDeleteOpen(true);
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!pendingDelete) return;
-        const ok = await submitDelete(pendingDelete.id);
-        if (!ok) return;
-        setDeleteOpen(false);
-        setPendingDelete(null);
+    const handleTransactionDeleted = () => {
         setPage(1);
         void refetch({ filter: { ...paginateFilterFields, page: 1 } });
     };
@@ -155,7 +146,7 @@ export default function Transaction() {
                             Gerencie todas as suas transações financeiras
                         </CardDescription>
                     </div>
-                    <Button type="button" className="h-10 gap-2 px-4 font-medium" onClick={() => setCreateOpen(true)}>
+                    <Button type="button" className="h-10 gap-2 px-4 font-medium" onClick={openCreateModal}>
                         <Plus className="size-4" strokeWidth={2} aria-hidden />
                         Nova transação
                     </Button>
@@ -240,17 +231,17 @@ export default function Transaction() {
                         page={pag?.page ?? page}
                         pageSize={PAGE_SIZE}
                         onPageChange={setPage}
-                        onDeleteTransaction={openDeleteDialog}
+                        onTransactionDeleted={handleTransactionDeleted}
+                        onEditTransaction={handleEditTransaction}
                     />
                 </CardContent>
             </Card>
-            <ModalFromTransaction open={createOpen} onOpenChange={handleCreateOpenChange} onSuccess={handleSuccess} />
-            <TransactionDeleteDialog
-                open={deleteOpen}
-                onOpenChange={handleDeleteOpenChange}
-                transactionTitle={pendingDelete?.title ?? ""}
-                loading={deleteLoading}
-                onConfirm={handleConfirmDelete}
+            <ModalFromTransaction
+                open={createOpen}
+                onOpenChange={handleCreateOpenChange}
+                onSuccess={handleSuccess}
+                onType={transactionToEdit ? "update" : "create"}
+                transaction={transactionToEdit ?? undefined}
             />
         </div>
     );

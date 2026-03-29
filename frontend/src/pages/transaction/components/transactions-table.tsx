@@ -3,18 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { formatBrl } from "@/lib/format";
 import type { Transaction } from "@/types";
 import { cn } from "@/lib/utils";
-import {
-    ArrowDown,
-    ArrowUp,
-    Briefcase,
-    ChevronLeft,
-    ChevronRight,
-    Pencil,
-    Trash2,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CATEGORY_ICON_OPTIONS } from "@/pages/category/components/category-icon-picker";
+import { TransactionRowActions } from "./transaction-row-actions";
 
 const TABLE_TONES = ["green", "blue", "purple", "orange", "mint"] as const;
 type TableTone = (typeof TABLE_TONES)[number];
@@ -76,7 +69,9 @@ interface TransactionsTableProps {
     page: number;
     pageSize: number;
     onPageChange: (page: number) => void;
-    onDeleteTransaction?: (transaction: Transaction) => void;
+    /** Chamado após excluir uma transação (ex.: refetch). */
+    onTransactionDeleted?: () => void;
+    onEditTransaction?: (transaction: Transaction) => void;
 }
 
 export function TransactionsTable({
@@ -85,7 +80,8 @@ export function TransactionsTable({
     page,
     pageSize,
     onPageChange,
-    onDeleteTransaction,
+    onTransactionDeleted,
+    onEditTransaction,
 }: TransactionsTableProps) {
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -194,27 +190,11 @@ export function TransactionsTable({
                                         </span>
                                     </td>
                                     <td className="px-4 py-4 align-middle last:pr-6">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="icon-sm"
-                                                className="shrink-0 border-gray-200 text-red-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-                                                aria-label="Excluir transação"
-                                                onClick={() => onDeleteTransaction?.(tx)}
-                                            >
-                                                <Trash2 className="size-4" strokeWidth={2} />
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="icon-sm"
-                                                className="shrink-0 border-gray-200 text-gray-700 hover:bg-gray-50"
-                                                aria-label="Editar transação"
-                                            >
-                                                <Pencil className="size-4" strokeWidth={2} />
-                                            </Button>
-                                        </div>
+                                        <TransactionRowActions
+                                            transaction={tx}
+                                            onDeleted={onTransactionDeleted}
+                                            onEdit={onEditTransaction}
+                                        />
                                     </td>
                                 </tr>
                             );

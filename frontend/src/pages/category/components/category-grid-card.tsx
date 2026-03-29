@@ -81,7 +81,7 @@ export function CategoryGridCard({ category, onEdit }: CategoryGridCardProps) {
                         open={deleteOpen}
                         onOpenChange={setDeleteOpen}
                         categoryName={name}
-                        countTransactions={countTransactions}
+                        countTransactions={countTransactions ?? 0}
                         onConfirm={() => handleDelete(category.id)}
                     />
                     <Button
