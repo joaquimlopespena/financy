@@ -5,7 +5,6 @@ import {
 } from "@/lib/graphql/mutations/transaction";
 import { GET_DASHBOARD } from "@/lib/graphql/queries/dashboard";
 import { GET_TRANSACTIONS } from "@/lib/graphql/queries/transaction";
-import { useAuthStore } from "@/stores/auth";
 import type { CreateTransactionInput, Transaction, UpdateTransactionInput } from "@/types";
 import { useMutation } from "@apollo/client/react";
 import { toast } from "sonner";
@@ -35,8 +34,6 @@ function handleMutationFailure(error: unknown, fallbackMessage = "Erro ao proces
             : [];
     const unauthorized = gqlErrors.some((e) => e.message === "Unauthorized");
     if (unauthorized) {
-        toast.error("Sessão inválida ou expirada. Entre de novo.");
-        useAuthStore.getState().logout();
         return;
     }
     const msg = getGraphqlErrorMessage(error) ?? fallbackMessage;

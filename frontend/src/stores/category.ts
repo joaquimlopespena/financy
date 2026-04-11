@@ -32,8 +32,6 @@ function handleMutationFailure(error: unknown) {
             : [];
     const unauthorized = gqlErrors.some((e) => e.message === "Unauthorized");
     if (unauthorized) {
-        toast.error("Sessão inválida ou expirada. Entre de novo.");
-        useAuthStore.getState().logout();
         return;
     }
     const msg = getGraphqlErrorMessage(error) ?? "Erro ao criar categoria";

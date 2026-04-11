@@ -7,11 +7,6 @@ import { useUserUpdate } from "@/stores/user";
 import { Loader2, LogOut, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-const PROFILE = {
-    initials: "CT",
-    name: "Conta teste",
-    email: "conta@teste.com",
-} as const;
 
 export default function Profile() {
     const logout = useAuthStore((state) => state.logout);
@@ -129,9 +124,9 @@ export default function Profile() {
                         <Button
                             type="submit"
                             className="h-11 w-full rounded-lg bg-brand-base text-base font-semibold text-white hover:bg-brand-dark"
-                            disabled={isLoading}
+                            disabled={isLoading || loading}
                         >
-                            {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Salvar alterações"}
+                            {isLoading || loading ? <Loader2 className="size-4 animate-spin" /> : "Salvar alterações"}
                             
                         </Button>
                     </form>

@@ -37,8 +37,7 @@ function handleMutationFailure(error: unknown, fallbackMessage = "Erro ao proces
             : [];
     const unauthorized = gqlErrors.some((e) => e.message === "Unauthorized");
     if (unauthorized) {
-        toast.error("Sessão inválida ou expirada. Entre de novo.");
-        useAuthStore.getState().logout();
+        // Toast + logout: `unauthorizedLink` em apollo.ts
         return;
     }
     const msg = getGraphqlErrorMessage(error) ?? fallbackMessage;

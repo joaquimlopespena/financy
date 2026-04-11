@@ -1,4 +1,5 @@
 import { ExpressContextFunctionArgument } from "@as-integrations/express5"
+import { JsonWebTokenError } from "jsonwebtoken"
 import { JwtPayload, verifyJwt } from "../../shared/utils/jwt";
 
 export type GraphQLContext = {
@@ -22,7 +23,11 @@ export const buildContext = async ({
             const decoded = verifyJwt(token) as JwtPayload;
             user = decoded.id;
         } catch (error) {
-            console.error(error);
+            if (error instanceof JsonWebTokenError) {
+                // Expired or invalid token — unauthenticated request
+            } else {
+                console.error(error);
+            }
         }
     }
 
